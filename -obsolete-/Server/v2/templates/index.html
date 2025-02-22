@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Clients</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <h2 class="mb-4">📡 Verbundene Clients</h2>
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Client-ID</th>
+                    <th>Hostname</th>
+                    <th>IP-Adresse</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client_id, client in clients.items() %}
+                <tr>
+                    <td>{{ client_id }}</td>
+                    <td>{{ client.hostname }}</td>
+                    <td>{{ client.ip }}</td>
+                    <td>
+                        <div class="input-group mb-2">
+                            <input type="text" class="form-control message-input" placeholder="Nachricht eingeben">
+                            <button class="btn btn-primary send-btn" data-client-id="{{ client_id }}">Senden</button>
+                            <button class="btn btn-danger stop-btn" data-client-id="{{ client_id }}">STOP</button>
+                        </div>
+                        <!-- Skript-Eingabefeld mit Dropdown -->
+						<!-- Skript Auswahl mit dynamischer Liste -->
+						<div class="input-group">
+							<select class="form-select script-dropdown">
+								<option value="">Bitte Skript auswählen...</option>
+							</select>
+							<select class="form-select script-type">
+								<option value="text">Text</option>
+								<option value="powershell">PowerShell</option>
+								<option value="powershell-base64">PowerShell (base64)</option>
+								<option value="bat">Batch</option>
+								<option value="python">Python</option>
+								<option value="linuxshell">Linux Shell</option>
+							</select>
+							<button class="btn btn-warning script-btn" data-client-id="{{ client_id }}">Skript senden</button>
+						</div>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Globaler Nachrichtenbereich -->
+        <div class="mt-4 p-3 bg-white border rounded">
+            <h4>📢 Nachricht an alle senden</h4>
+            <div class="input-group mb-2">
+                <input type="text" id="globalMessage" class="form-control" placeholder="Nachricht für alle Clients eingeben">
+                <button class="btn btn-success" id="sendAllBtn">An alle senden</button>
+                <button class="btn btn-danger" id="stopAllBtn">STOP an alle</button>
+            </div>
+            <div class="input-group">
+				<select class="form-select" id="globalScriptDropdown">
+					<option value="">Bitte Skript auswählen...</option>
+				</select>
+				<select class="form-select" id="globalScriptType">
+					<option value="text">Text</option>
+					<option value="powershell">PowerShell</option>
+					<option value="powershell-base64">PowerShell (base64)</option>
+					<option value="bat">Batch</option>
+					<option value="python">Python</option>
+					<option value="linuxshell">Linux Shell</option>
+				</select>
+				<button class="btn btn-warning" id="sendScriptAllBtn">Skript an alle senden</button>
+			</div>
+
+        </div>
+    </div>
+
+    <!-- Modal für Erfolgsmeldung -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Nachricht gesendet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on("refresh", function() {
+            console.log("🔄 Auto-Refresh ausgelöst.");
+            location.reload();
+        });
+
+        $(document).ready(function() {
+            // Nachricht an einzelnen Client senden
+            $(".send-btn").click(function() {
+                let clientId = $(this).data("client-id");
+                let message = $(this).closest("tr").find(".message-input").val().trim();
+
+                if (message === "") {
+                    alert("⚠️ Bitte eine Nachricht eingeben!");
+                    return;
+                }
+
+                $.post("/send_message", { client_id: clientId, message: message })
+                    .done(function(response) {
+                        alert("✅ Nachricht erfolgreich gesendet!");
+                    })
+                    .fail(function(xhr) {
+                        alert("❌ Fehler beim Senden: " + xhr.responseText);
+                    });
+            });
+
+            // STOP an einzelnen Client senden
+            $(".stop-btn").click(function() {
+                let clientId = $(this).data("client-id");
+
+                $.post("/send_message", { client_id: clientId, message: "STOP" })
+                    .done(function(response) {
+                        alert("🛑 STOP-Nachricht gesendet!");
+                    })
+                    .fail(function(xhr) {
+                        alert("❌ Fehler beim Senden: " + xhr.responseText);
+                    });
+            });
+
+            // Skript an einzelnen Client senden
+			// Skript an einzelnen Client senden
+			$(".script-btn").click(function() {
+				let clientId = $(this).data("client-id");
+				let scriptName = $(this).closest("tr").find(".script-dropdown").val(); // Dropdown-Änderung
+				let scriptType = $(this).closest("tr").find(".script-type").val();
+
+				if (!scriptName) {
+					alert("⚠️ Bitte ein Skript auswählen!");
+					return;
+				}
+
+				$.post("/send_script", { client_id: clientId, script_name: scriptName, script_type: scriptType })
+					.done(function(response) {
+						alert("✅ Skript erfolgreich gesendet!");
+					})
+					.fail(function(xhr) {
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+
+            // Skript an alle Clients senden
+            // Skript an alle Clients senden
+			$("#sendScriptAllBtn").click(function() {
+				let scriptName = $("#globalScriptDropdown").val(); // Dropdown statt Input
+				let scriptType = $("#globalScriptType").val();
+
+				if (!scriptName) {
+					alert("⚠️ Bitte ein Skript auswählen!");
+					return;
+				}
+
+				$.post("/send_script_all", { script_name: scriptName, script_type: scriptType })
+					.done(function(response) {
+						alert("✅ Skript erfolgreich an alle gesendet!");
+					})
+					.fail(function(xhr) {
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+        });
+		
+		function loadScripts() {
+			$.get("/get_scripts", function(data) {
+				$(".script-dropdown, #globalScriptDropdown").empty().append('<option value="">Bitte Skript auswählen...</option>');
+
+				if (data.error) {
+					console.error("❌ Fehler beim Laden der Skripte:", data.error);
+					$(".script-dropdown, #globalScriptDropdown").append('<option value="">⚠️ Keine Skripte gefunden!</option>');
+				} else {
+					data.forEach(script => {
+						$(".script-dropdown, #globalScriptDropdown").append(`<option value="${script.name}">${script.name}</option>`);
+					});
+				}
+			}).fail(function(xhr) {
+				console.error("❌ Fehler beim Abrufen der Skripte:", xhr.responseText);
+				$(".script-dropdown, #globalScriptDropdown").append('<option value="">⚠️ Fehler beim Laden!</option>');
+			});
+		}
+
+
+		// Skriptliste beim Laden abrufen
+		$(document).ready(function() {
+			loadScripts();
+		});
+
+
+    </script>
+
+</body>
+</html>

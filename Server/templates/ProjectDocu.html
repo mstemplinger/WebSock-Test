@@ -1,0 +1,2880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <style>
+  @font-face {
+  font-family: octicons-link;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+.markdown-body .octicon {
+  display: inline-block;
+  fill: currentColor;
+  vertical-align: text-bottom;
+}
+
+.markdown-body .anchor {
+  float: left;
+  line-height: 1;
+  margin-left: -20px;
+  padding-right: 4px;
+}
+
+.markdown-body .anchor:focus {
+  outline: none;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+  color: #1b1f23;
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+
+.markdown-body {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  color: #24292e;
+  line-height: 1.5;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.markdown-body .pl-c {
+  color: #6a737d;
+}
+
+.markdown-body .pl-c1,
+.markdown-body .pl-s .pl-v {
+  color: #005cc5;
+}
+
+.markdown-body .pl-e,
+.markdown-body .pl-en {
+  color: #6f42c1;
+}
+
+.markdown-body .pl-s .pl-s1,
+.markdown-body .pl-smi {
+  color: #24292e;
+}
+
+.markdown-body .pl-ent {
+  color: #22863a;
+}
+
+.markdown-body .pl-k {
+  color: #d73a49;
+}
+
+.markdown-body .pl-pds,
+.markdown-body .pl-s,
+.markdown-body .pl-s .pl-pse .pl-s1,
+.markdown-body .pl-sr,
+.markdown-body .pl-sr .pl-cce,
+.markdown-body .pl-sr .pl-sra,
+.markdown-body .pl-sr .pl-sre {
+  color: #032f62;
+}
+
+.markdown-body .pl-smw,
+.markdown-body .pl-v {
+  color: #e36209;
+}
+
+.markdown-body .pl-bu {
+  color: #b31d28;
+}
+
+.markdown-body .pl-ii {
+  background-color: #b31d28;
+  color: #fafbfc;
+}
+
+.markdown-body .pl-c2 {
+  background-color: #d73a49;
+  color: #fafbfc;
+}
+
+.markdown-body .pl-c2:before {
+  content: "^M";
+}
+
+.markdown-body .pl-sr .pl-cce {
+  color: #22863a;
+  font-weight: 700;
+}
+
+.markdown-body .pl-ml {
+  color: #735c0f;
+}
+
+.markdown-body .pl-mh,
+.markdown-body .pl-mh .pl-en,
+.markdown-body .pl-ms {
+  color: #005cc5;
+  font-weight: 700;
+}
+
+.markdown-body .pl-mi {
+  color: #24292e;
+  font-style: italic;
+}
+
+.markdown-body .pl-mb {
+  color: #24292e;
+  font-weight: 700;
+}
+
+.markdown-body .pl-md {
+  background-color: #ffeef0;
+  color: #b31d28;
+}
+
+.markdown-body .pl-mi1 {
+  background-color: #f0fff4;
+  color: #22863a;
+}
+
+.markdown-body .pl-mc {
+  background-color: #ffebda;
+  color: #e36209;
+}
+
+.markdown-body .pl-mi2 {
+  background-color: #005cc5;
+  color: #f6f8fa;
+}
+
+.markdown-body .pl-mdr {
+  color: #6f42c1;
+  font-weight: 700;
+}
+
+.markdown-body .pl-ba {
+  color: #586069;
+}
+
+.markdown-body .pl-sg {
+  color: #959da5;
+}
+
+.markdown-body .pl-corl {
+  color: #032f62;
+  text-decoration: underline;
+}
+
+.markdown-body details {
+  display: block;
+}
+
+.markdown-body summary {
+  display: list-item;
+}
+
+.markdown-body a {
+  background-color: transparent;
+}
+
+.markdown-body a:active,
+.markdown-body a:hover {
+  outline-width: 0;
+}
+
+.markdown-body strong {
+  font-weight: inherit;
+  font-weight: bolder;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  margin: .67em 0;
+}
+
+.markdown-body img {
+  border-style: none;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre {
+  font-family: monospace,monospace;
+  font-size: 1em;
+}
+
+.markdown-body hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+
+.markdown-body input {
+  font: inherit;
+  margin: 0;
+}
+
+.markdown-body input {
+  overflow: visible;
+}
+
+.markdown-body [type=checkbox] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body * {
+  box-sizing: border-box;
+}
+
+.markdown-body input {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.markdown-body a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body hr {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #dfe2e5;
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.markdown-body hr:before {
+  content: "";
+  display: table;
+}
+
+.markdown-body hr:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body details summary {
+  cursor: pointer;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.markdown-body h1 {
+  font-size: 32px;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+  font-weight: 600;
+}
+
+.markdown-body h2 {
+  font-size: 24px;
+}
+
+.markdown-body h3 {
+  font-size: 20px;
+}
+
+.markdown-body h3,
+.markdown-body h4 {
+  font-weight: 600;
+}
+
+.markdown-body h4 {
+  font-size: 16px;
+}
+
+.markdown-body h5 {
+  font-size: 14px;
+}
+
+.markdown-body h5,
+.markdown-body h6 {
+  font-weight: 600;
+}
+
+.markdown-body h6 {
+  font-size: 12px;
+}
+
+.markdown-body p {
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+}
+
+.markdown-body ol,
+.markdown-body ul {
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ol ol ol,
+.markdown-body ol ul ol,
+.markdown-body ul ol ol,
+.markdown-body ul ul ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body code,
+.markdown-body pre {
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.markdown-body input::-webkit-inner-spin-button,
+.markdown-body input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.markdown-body .border {
+  border: 1px solid #e1e4e8!important;
+}
+
+.markdown-body .border-0 {
+  border: 0!important;
+}
+
+.markdown-body .border-bottom {
+  border-bottom: 1px solid #e1e4e8!important;
+}
+
+.markdown-body .rounded-1 {
+  border-radius: 3px!important;
+}
+
+.markdown-body .bg-white {
+  background-color: #fff!important;
+}
+
+.markdown-body .bg-gray-light {
+  background-color: #fafbfc!important;
+}
+
+.markdown-body .text-gray-light {
+  color: #6a737d!important;
+}
+
+.markdown-body .mb-0 {
+  margin-bottom: 0!important;
+}
+
+.markdown-body .my-2 {
+  margin-bottom: 8px!important;
+  margin-top: 8px!important;
+}
+
+.markdown-body .pl-0 {
+  padding-left: 0!important;
+}
+
+.markdown-body .py-0 {
+  padding-bottom: 0!important;
+  padding-top: 0!important;
+}
+
+.markdown-body .pl-1 {
+  padding-left: 4px!important;
+}
+
+.markdown-body .pl-2 {
+  padding-left: 8px!important;
+}
+
+.markdown-body .py-2 {
+  padding-bottom: 8px!important;
+  padding-top: 8px!important;
+}
+
+.markdown-body .pl-3,
+.markdown-body .px-3 {
+  padding-left: 16px!important;
+}
+
+.markdown-body .px-3 {
+  padding-right: 16px!important;
+}
+
+.markdown-body .pl-4 {
+  padding-left: 24px!important;
+}
+
+.markdown-body .pl-5 {
+  padding-left: 32px!important;
+}
+
+.markdown-body .pl-6 {
+  padding-left: 40px!important;
+}
+
+.markdown-body .f6 {
+  font-size: 12px!important;
+}
+
+.markdown-body .lh-condensed {
+  line-height: 1.25!important;
+}
+
+.markdown-body .text-bold {
+  font-weight: 600!important;
+}
+
+.markdown-body:before {
+  content: "";
+  display: table;
+}
+
+.markdown-body:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.markdown-body>:first-child {
+  margin-top: 0!important;
+}
+
+.markdown-body>:last-child {
+  margin-bottom: 0!important;
+}
+
+.markdown-body a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown-body blockquote,
+.markdown-body dl,
+.markdown-body ol,
+.markdown-body p,
+.markdown-body pre,
+.markdown-body table,
+.markdown-body ul {
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.markdown-body hr {
+  background-color: #e1e4e8;
+  border: 0;
+  height: .25em;
+  margin: 24px 0;
+  padding: 0;
+}
+
+.markdown-body blockquote {
+  border-left: .25em solid #dfe2e5;
+  color: #6a737d;
+  padding: 0 1em;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body kbd {
+  background-color: #fafbfc;
+  border: 1px solid #c6cbd1;
+  border-bottom-color: #959da5;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #959da5;
+  color: #444d56;
+  display: inline-block;
+  font-size: 11px;
+  line-height: 10px;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  margin-top: 24px;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+}
+
+.markdown-body h1,
+.markdown-body h2 {
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: .3em;
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-size: .875em;
+}
+
+.markdown-body h6 {
+  color: #6a737d;
+  font-size: .85em;
+}
+
+.markdown-body ol,
+.markdown-body ul {
+  padding-left: 2em;
+}
+
+.markdown-body ol ol,
+.markdown-body ol ul,
+.markdown-body ul ol,
+.markdown-body ul ul {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.markdown-body li {
+  word-wrap: break-all;
+}
+
+.markdown-body li>p {
+  margin-top: 16px;
+}
+
+.markdown-body li+li {
+  margin-top: .25em;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  font-size: 1em;
+  font-style: italic;
+  font-weight: 600;
+  margin-top: 16px;
+  padding: 0;
+}
+
+.markdown-body dl dd {
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.markdown-body table {
+  display: block;
+  overflow: auto;
+  width: 100%;
+}
+
+.markdown-body table th {
+  font-weight: 600;
+}
+
+.markdown-body table td,
+.markdown-body table th {
+  border: 1px solid #dfe2e5;
+  padding: 6px 13px;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+.markdown-body img {
+  background-color: #fff;
+  box-sizing: content-box;
+  max-width: 100%;
+}
+
+.markdown-body img[align=right] {
+  padding-left: 20px;
+}
+
+.markdown-body img[align=left] {
+  padding-right: 20px;
+}
+
+.markdown-body code {
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+  font-size: 85%;
+  margin: 0;
+  padding: .2em .4em;
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+}
+
+.markdown-body pre>code {
+  background: transparent;
+  border: 0;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  word-break: normal;
+}
+
+.markdown-body .highlight {
+  margin-bottom: 16px;
+}
+
+.markdown-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  border: 0;
+  display: inline;
+  line-height: inherit;
+  margin: 0;
+  max-width: auto;
+  overflow: visible;
+  padding: 0;
+  word-wrap: normal;
+}
+
+.markdown-body .commit-tease-sha {
+  color: #444d56;
+  display: inline-block;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 90%;
+}
+
+.markdown-body .blob-wrapper {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.markdown-body .blob-wrapper-embedded {
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.markdown-body .blob-num {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  color: rgba(27,31,35,.3);
+  cursor: pointer;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 12px;
+  line-height: 20px;
+  min-width: 50px;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: right;
+  user-select: none;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.markdown-body .blob-num:hover {
+  color: rgba(27,31,35,.6);
+}
+
+.markdown-body .blob-num:before {
+  content: attr(data-line-number);
+}
+
+.markdown-body .blob-code {
+  line-height: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  vertical-align: top;
+}
+
+.markdown-body .blob-code-inner {
+  color: #24292e;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  font-size: 12px;
+  overflow: visible;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.markdown-body .pl-token.active,
+.markdown-body .pl-token:hover {
+  background: #ffea7f;
+  cursor: pointer;
+}
+
+.markdown-body kbd {
+  background-color: #fafbfc;
+  border: 1px solid #d1d5da;
+  border-bottom-color: #c6cbd1;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #c6cbd1;
+  color: #444d56;
+  display: inline-block;
+  font: 11px SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+  line-height: 10px;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+
+.markdown-body :checked+.radio-label {
+  border-color: #0366d6;
+  position: relative;
+  z-index: 1;
+}
+
+.markdown-body .tab-size[data-tab-size="1"] {
+  -moz-tab-size: 1;
+  tab-size: 1;
+}
+
+.markdown-body .tab-size[data-tab-size="2"] {
+  -moz-tab-size: 2;
+  tab-size: 2;
+}
+
+.markdown-body .tab-size[data-tab-size="3"] {
+  -moz-tab-size: 3;
+  tab-size: 3;
+}
+
+.markdown-body .tab-size[data-tab-size="4"] {
+  -moz-tab-size: 4;
+  tab-size: 4;
+}
+
+.markdown-body .tab-size[data-tab-size="5"] {
+  -moz-tab-size: 5;
+  tab-size: 5;
+}
+
+.markdown-body .tab-size[data-tab-size="6"] {
+  -moz-tab-size: 6;
+  tab-size: 6;
+}
+
+.markdown-body .tab-size[data-tab-size="7"] {
+  -moz-tab-size: 7;
+  tab-size: 7;
+}
+
+.markdown-body .tab-size[data-tab-size="8"] {
+  -moz-tab-size: 8;
+  tab-size: 8;
+}
+
+.markdown-body .tab-size[data-tab-size="9"] {
+  -moz-tab-size: 9;
+  tab-size: 9;
+}
+
+.markdown-body .tab-size[data-tab-size="10"] {
+  -moz-tab-size: 10;
+  tab-size: 10;
+}
+
+.markdown-body .tab-size[data-tab-size="11"] {
+  -moz-tab-size: 11;
+  tab-size: 11;
+}
+
+.markdown-body .tab-size[data-tab-size="12"] {
+  -moz-tab-size: 12;
+  tab-size: 12;
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 3px;
+}
+
+.markdown-body .task-list-item input {
+  margin: 0 .2em .25em -1.6em;
+  vertical-align: middle;
+}
+
+.markdown-body hr {
+  border-bottom-color: #eee;
+}
+
+.markdown-body .pl-0 {
+  padding-left: 0!important;
+}
+
+.markdown-body .pl-1 {
+  padding-left: 4px!important;
+}
+
+.markdown-body .pl-2 {
+  padding-left: 8px!important;
+}
+
+.markdown-body .pl-3 {
+  padding-left: 16px!important;
+}
+
+.markdown-body .pl-4 {
+  padding-left: 24px!important;
+}
+
+.markdown-body .pl-5 {
+  padding-left: 32px!important;
+}
+
+.markdown-body .pl-6 {
+  padding-left: 40px!important;
+}
+
+.markdown-body .pl-7 {
+  padding-left: 48px!important;
+}
+
+.markdown-body .pl-8 {
+  padding-left: 64px!important;
+}
+
+.markdown-body .pl-9 {
+  padding-left: 80px!important;
+}
+
+.markdown-body .pl-10 {
+  padding-left: 96px!important;
+}
+
+.markdown-body .pl-11 {
+  padding-left: 112px!important;
+}
+
+.markdown-body .pl-12 {
+  padding-left: 128px!important;
+}
+
+/*# sourceURL=webpack://./node_modules/github-markdown-css/github-markdown.css */
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8uL25vZGVfbW9kdWxlcy9naXRodWItbWFya2Rvd24tY3NzL2dpdGh1Yi1tYXJrZG93bi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSwwQkFBMEI7RUFDMUIsMkRBQXF0RTtBQUN2dEU7O0FBRUE7RUFDRSxxQkFBcUI7RUFDckIsa0JBQWtCO0VBQ2xCLDJCQUEyQjtBQUM3Qjs7QUFFQTtFQUNFLFdBQVc7RUFDWCxjQUFjO0VBQ2Qsa0JBQWtCO0VBQ2xCLGtCQUFrQjtBQUNwQjs7QUFFQTtFQUNFLGFBQWE7QUFDZjs7QUFFQTs7Ozs7O0VBTUUsY0FBYztFQUNkLHNCQUFzQjtFQUN0QixrQkFBa0I7QUFDcEI7O0FBRUE7Ozs7OztFQU1FLHFCQUFxQjtBQUN2Qjs7QUFFQTs7Ozs7O0VBTUUsbUJBQW1CO0FBQ3JCOztBQUVBO0VBQ0UsMEJBQTBCO0VBQzFCLDhCQUE4QjtFQUM5QixjQUFjO0VBQ2QsZ0JBQWdCO0VBQ2hCLGtJQUFrSTtFQUNsSSxlQUFlO0VBQ2YsZ0JBQWdCO0VBQ2hCLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFLGNBQWM7QUFDaEI7O0FBRUE7O0VBRUUsY0FBYztBQUNoQjs7QUFFQTs7RUFFRSxjQUFjO0FBQ2hCOztBQUVBOztFQUVFLGNBQWM7QUFDaEI7O0FBRUE7RUFDRSxjQUFjO0FBQ2hCOztBQUVBO0VBQ0UsY0FBYztBQUNoQjs7QUFFQTs7Ozs7OztFQU9FLGNBQWM7QUFDaEI7O0FBRUE7O0VBRUUsY0FBYztBQUNoQjs7QUFFQTtFQUNFLGNBQWM7QUFDaEI7O0FBRUE7RUFDRSx5QkFBeUI7RUFDekIsY0FBYztBQUNoQjs7QUFFQTtFQUNFLHlCQUF5QjtFQUN6QixjQUFjO0FBQ2hCOztBQUVBO0VBQ0UsYUFBYTtBQUNmOztBQUVBO0VBQ0UsY0FBYztFQUNkLGdCQUFnQjtBQUNsQjs7QUFFQTtFQUNFLGNBQWM7QUFDaEI7O0FBRUE7OztFQUdFLGNBQWM7RUFDZCxnQkFBZ0I7QUFDbEI7O0FBRUE7RUFD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 */
+  </style>
+  <style>
+  /**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+
+/*# sourceURL=webpack://./node_modules/prismjs/themes/prism.css */
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8uL25vZGVfbW9kdWxlcy9wcmlzbWpzL3RoZW1lcy9wcmlzbS5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7RUFJRTs7QUFFRjs7Q0FFQyxZQUFZO0NBQ1osZ0JBQWdCO0NBQ2hCLHdCQUF3QjtDQUN4QixzRUFBc0U7Q0FDdEUsY0FBYztDQUNkLGdCQUFnQjtDQUNoQixnQkFBZ0I7Q0FDaEIsb0JBQW9CO0NBQ3BCLGtCQUFrQjtDQUNsQixpQkFBaUI7Q0FDakIsZ0JBQWdCOztDQUVoQixnQkFBZ0I7Q0FDaEIsY0FBYztDQUNkLFdBQVc7O0NBRVgscUJBQXFCO0NBQ3JCLGtCQUFrQjtDQUNsQixpQkFBaUI7Q0FDakIsYUFBYTtBQUNkOztBQUVBOztDQUVDLGlCQUFpQjtDQUNqQixtQkFBbUI7QUFDcEI7O0FBRUE7O0NBRUMsaUJBQWlCO0NBQ2pCLG1CQUFtQjtBQUNwQjs7QUFFQTtDQUNDOztFQUVDLGlCQUFpQjtDQUNsQjtBQUNEOztBQUVBLGdCQUFnQjtBQUNoQjtDQUNDLFlBQVk7Q0FDWixjQUFjO0NBQ2QsY0FBYztBQUNmOztBQUVBOztDQUVDLG1CQUFtQjtBQUNwQjs7QUFFQSxnQkFBZ0I7QUFDaEI7Q0FDQyxhQUFhO0NBQ2IsbUJBQW1CO0NBQ25CLG1CQUFtQjtBQUNwQjs7QUFFQTs7OztDQUlDLGdCQUFnQjtBQUNqQjs7QUFFQTtDQUNDLFdBQVc7QUFDWjs7QUFFQTtDQUNDLFdBQVc7QUFDWjs7QUFFQTs7Ozs7OztDQU9DLFdBQVc7QUFDWjs7QUFFQTs7Ozs7O0NBTUMsV0FBVztBQUNaOztBQUVBOzs7OztDQUtDLGNBQWM7Q0FDZCxvRUFBb0U7Q0FDcEUsaUNBQWlDO0FBQ2xDOztBQUVBOzs7Q0FHQyxXQUFXO0FBQ1o7O0FBRUE7O0NBRUMsY0FBYztBQUNmOztBQUVBOzs7Q0FHQyxXQUFXO0FBQ1o7O0FBRUE7O0NBRUMsaUJBQWlCO0FBQ2xCO0FBQ0E7Q0FDQyxrQkFBa0I7QUFDbkI7O0FBRUE7Q0FDQyxZQUFZO0FBQ2IiLCJzb3VyY2VSb290IjoiIn0= */
+  </style>
+  <style>
+  
+  </style>
+  <style>
+    .markdown-body {
+      font-family: -apple-system,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+      box-sizing: border-box;
+      min-width: 200px;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 45px;
+    }
+
+    @media not print {
+      .markdown-body {
+        padding: 45px;
+      }
+
+      @media (max-width: 767px) {
+        .markdown-body {
+          padding: 15px;
+        }
+      }
+    }
+
+    .hf-container {
+      color: #24292e;
+      line-height: 1.3;
+    }
+
+    .markdown-body .highlight pre,
+    .markdown-body pre {
+      white-space: pre-wrap;
+    }
+    .markdown-body table {
+      display: table;
+    }
+    .markdown-body img[data-align="center"] {
+      display: block;
+      margin: 0 auto;
+    }
+    .markdown-body img[data-align="right"] {
+      display: block;
+      margin: 0 0 0 auto;
+    }
+    .markdown-body li.task-list-item {
+      list-style-type: none;
+    }
+    .markdown-body li > [type=checkbox] {
+      margin: 0 0 0 -1.3em;
+    }
+    .markdown-body input[type="checkbox"] ~ p {
+      margin-top: 0;
+      display: inline-block;
+    }
+    .markdown-body ol ol,
+    .markdown-body ul ol {
+      list-style-type: decimal;
+    }
+    .markdown-body ol ol ol,
+    .markdown-body ol ul ol,
+    .markdown-body ul ol ol,
+    .markdown-body ul ul ol {
+      list-style-type: decimal;
+    }
+  </style>
+  <style>.markdown-body a.footnote-ref {
+  text-decoration: none;
+}
+
+.footnotes {
+  font-size: .85em;
+  opacity: .8;
+}
+
+.footnotes li[role="doc-endnote"] {
+  position: relative;
+}
+
+.footnotes .footnote-back {
+  position: absolute;
+  font-family: initial;
+  top: .2em;
+  right: 1em;
+  text-decoration: none;
+}
+
+.inline-math.invalid,
+.multiple-math.invalid {
+  color: rgb(255, 105, 105);
+}
+
+.toc-container {
+  width: 100%;
+}
+
+.toc-container .toc-title {
+  font-weight: 700;
+  font-size: 1.2em;
+  margin-bottom: 0;
+}
+
+.toc-container li,
+.toc-container ul,
+.toc-container ul li {
+  list-style: none !important;
+}
+
+.toc-container > ul {
+  padding-left: 0;
+}
+
+.toc-container ul li span {
+  display : flex;
+}
+
+.toc-container ul li span a {
+  color: inherit;
+  text-decoration: none;
+}
+.toc-container ul li span a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.toc-container ul li span span.dots {
+  flex: 1;
+  height: 0.65em;
+  margin: 0 10px;
+  border-bottom: 2px dotted black;
+}
+
+/*# sourceURL=webpack://./src/muya/lib/assets/styles/exportStyle.css */
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8uL3NyYy9tdXlhL2xpYi9hc3NldHMvc3R5bGVzL2V4cG9ydFN0eWxlLmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixXQUFXO0FBQ2I7O0FBRUE7RUFDRSxrQkFBa0I7QUFDcEI7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsb0JBQW9CO0VBQ3BCLFNBQVM7RUFDVCxVQUFVO0VBQ1YscUJBQXFCO0FBQ3ZCOztBQUVBOztFQUVFLHlCQUF5QjtBQUMzQjs7QUFFQTtFQUNFLFdBQVc7QUFDYjs7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixnQkFBZ0I7RUFDaEIsZ0JBQWdCO0FBQ2xCOztBQUVBOzs7RUFHRSwyQkFBMkI7QUFDN0I7O0FBRUE7RUFDRSxlQUFlO0FBQ2pCOztBQUVBO0VBQ0UsY0FBYztBQUNoQjs7QUFFQTtFQUNFLGNBQWM7RUFDZCxxQkFBcUI7QUFDdkI7QUFDQTtFQUNFLGNBQWM7RUFDZCxxQkFBcUI7QUFDdkI7O0FBRUE7RUFDRSxPQUFPO0VBQ1AsY0FBYztFQUNkLGNBQWM7RUFDZCwrQkFBK0I7QUFDakMiLCJzb3VyY2VSb290IjoiIn0= */</style>
+  <style>.markdown-body{}pre.front-matter{display:none!important;}</style>
+</head>
+<body>
+  <article class="markdown-body"><h1 class="atx" id="📌-endbenutzer-dokumentation-">*<em>📌 Endbenutzer-Dokumentation: *</em></h1>
+<h1 class="atx" id="server-andamp-client-interaktion"><strong>Server &amp; Client Interaktion</strong></h1>
+<h2 class="atx" id="🛠-uberblick"><strong>🛠 Überblick</strong></h2>
+<p>Dieses System besteht aus einem <strong>zentralen Server</strong>, der mit mehreren <strong>Clients</strong> über <strong>WebSockets</strong> und <strong>HTTP-API-Endpunkte</strong> kommuniziert.<br>Der Server empfängt, speichert und verarbeitet Daten von den Clients und ermöglicht zentrale Steuerungs- und Automatisierungsprozesse.</p>
+<hr>
+<h2 class="atx" id="🌍-server-funktionalitat"><strong>🌍 Server-Funktionalität</strong></h2>
+<p>Der Server übernimmt folgende Hauptaufgaben:</p>
+<p>1️⃣ <strong>Verwaltung von Clients</strong></p>
+<ul>
+<li>Registriert und speichert verbundene Clients</li>
+<li>Aktualisiert Verbindungsstatus und letzte Aktivitäten</li>
+<li>Listet verbundene Clients in einer Web-Oberfläche</li>
+</ul>
+<p>2️⃣ <strong>Empfang und Speicherung von Daten</strong></p>
+<ul>
+<li>Clients können Daten (z. B. Systeminformationen, Logs) an den Server senden</li>
+<li>Diese Daten werden in einer SQL-Datenbank gespeichert</li>
+<li>Eine Inbox-Funktionalität erlaubt eine spätere Verarbeitung</li>
+</ul>
+<p>3️⃣ <strong>Zentrale Steuerung und Kommunikation</strong></p>
+<ul>
+<li>Admins können über den Server Nachrichten an Clients senden</li>
+<li>Der Server kann Skripte an Clients verteilen und deren Ausführung überwachen</li>
+<li>Steuerung und Verwaltung erfolgt über eine Web-Oberfläche oder API</li>
+</ul>
+<p>4️⃣ <strong>WebSocket-Kommunikation für Echtzeit-Updates</strong></p>
+<ul>
+<li>Clients melden sich über WebSockets am Server an</li>
+<li>Der Server sendet Steuerungsbefehle an Clients (z. B. Skriptausführung)</li>
+<li>Clients bestätigen die erfolgreiche Verarbeitung von Aufgaben</li>
+</ul>
+<p>5️⃣ <strong>Datenbankbasierte Steuerung</strong></p>
+<ul>
+<li>Alle empfangenen Daten und Interaktionen werden protokolliert</li>
+<li>Clients können Konfigurationsänderungen und Befehle aus der Datenbank abrufen</li>
+</ul>
+<hr>
+<h2 class="atx" id="🔄-interaktion-zwischen-server-andamp-clients"><strong>🔄 Interaktion zwischen Server &amp; Clients</strong></h2>
+<h3 class="atx" id="1️⃣-client-registrierung"><strong>1️⃣ Client-Registrierung</strong></h3>
+<ul>
+<li>Beim Start meldet sich jeder Client automatisch beim Server an.</li>
+<li>Der Client übermittelt:<ul>
+<li><strong>Client-ID</strong> (eindeutig pro Gerät)</li>
+<li><strong>Hostname</strong> (Rechnername)</li>
+<li><strong>IP-Adresse</strong> (Netzwerkadresse)</li>
+</ul>
+</li>
+<li>Der Server speichert diese Informationen in der Datenbank und zeigt sie in der <strong>Web-Oberfläche</strong> an.</li>
+</ul>
+<hr>
+<h3 class="atx" id="2️⃣-echtzeit-kommunikation-uber-websockets"><strong>2️⃣ Echtzeit-Kommunikation über WebSockets</strong></h3>
+<ul>
+<li>Nach der Registrierung bleibt der Client über <strong>WebSockets</strong> verbunden.</li>
+<li>Der Server kann Befehle oder Skripte an Clients senden.</li>
+<li>Der Client kann <strong>Statusmeldungen</strong>, <strong>Log-Dateien</strong> oder <strong>Systeminformationen</strong> zurücksenden.</li>
+</ul>
+<hr>
+<h3 class="atx" id="3️⃣-skriptausfuhrung-auf-clients"><strong>3️⃣ Skriptausführung auf Clients</strong></h3>
+<ul>
+<li>Admins können Skripte (z. B. PowerShell, Python, Bash) zentral verwalten.</li>
+<li>Diese Skripte können an einzelne oder alle Clients gesendet und dort ausgeführt werden.</li>
+<li>Der Server überwacht die Übertragung und den Erfolg der Skriptausführung.</li>
+</ul>
+<h4 class="atx" id="skriptverteilung-ablauf"><strong>Skriptverteilung Ablauf</strong></h4>
+<ol>
+<li>Admin lädt ein Skript in den <strong>Server-Skriptordner</strong> hoch.</li>
+<li>Über die Web-Oberfläche oder API wählt der Admin:<ul>
+<li><strong>Client</strong>, an den das Skript gesendet werden soll</li>
+<li><strong>Skripttyp</strong> (PowerShell, Batch, Python, Shell)</li>
+</ul>
+</li>
+<li>Der Server sendet das Skript in <strong>mehreren Chunks</strong> an den Client.</li>
+<li>Der Client führt das Skript aus und sendet das Ergebnis zurück.</li>
+</ol>
+<hr>
+<h3 class="atx" id="4️⃣-zentrale-steuerung-per-web-oberflache-oder-api"><strong>4️⃣ Zentrale Steuerung per Web-Oberfläche oder API</strong></h3>
+<p>Der Server stellt eine Web-Oberfläche zur Verwaltung der Clients bereit:</p>
+<ul>
+<li><strong>Client-Liste anzeigen</strong></li>
+<li><strong>Client-Details abrufen</strong></li>
+<li><strong>Nachrichten an Clients senden</strong></li>
+<li><strong>Skripte an Clients verteilen</strong></li>
+<li><strong>Gespeicherte Daten einsehen</strong></li>
+</ul>
+<p>Alternativ können Admins die REST-API nutzen, um Anfragen direkt zu stellen.</p>
+<hr>
+<h3 class="atx" id="5️⃣-inbox-funktion--datenubertragung-andamp-speicherung"><strong>5️⃣ Inbox-Funktion – Datenübertragung &amp; Speicherung</strong></h3>
+<p>Clients können strukturierte Daten (JSON-Format) an den Server senden.<br>Diese Daten werden zunächst <strong>ungeprüft in der Inbox gespeichert</strong> und später verarbeitet.</p>
+<h4 class="atx" id="ablauf-einer-inbox-datenverarbeitung"><strong>Ablauf einer Inbox-Datenverarbeitung</strong></h4>
+<ol>
+<li>Client sendet eine JSON-Nachricht mit Daten an den Server.</li>
+<li>Der Server speichert diese in der Datenbank (Inbox-Tabelle).</li>
+<li>Ein Hintergrundprozess verarbeitet die Daten und speichert sie in den finalen Tabellen.</li>
+<li>Falls eine Fehlermeldung auftritt, wird diese im Log hinterlegt.</li>
+</ol>
+<p>📌 <strong>Einsatzmöglichkeiten:</strong></p>
+<ul>
+<li>Software-Update-Informationen speichern</li>
+<li>Logs &amp; Fehlerberichte von Clients sammeln</li>
+<li>Systemstatus und Konfigurationsdaten abrufen</li>
+</ul>
+<hr>
+<h2 class="atx" id="🖥-web-oberflache--uberblick"><strong>🖥 Web-Oberfläche – Überblick</strong></h2>
+<p>Die Web-Oberfläche ist über den <strong>Browser</strong> erreichbar unter:</p>
+<p>📍 <strong><a href="http://localhost:5001/">http://localhost:5001/</a></strong></p>
+<h3 class="atx" id="verfugbare-funktionen"><strong>Verfügbare Funktionen:</strong></h3>
+<p>1️⃣ <strong>Startseite:</strong></p>
+<ul>
+<li>Übersicht über alle verbundenen Clients</li>
+<li>Anzeige von Client-Details</li>
+</ul>
+<p>2️⃣ <strong>Clients verwalten:</strong></p>
+<ul>
+<li>Liste aller registrierten Clients</li>
+<li>Verbindung prüfen (online/offline)</li>
+</ul>
+<p>3️⃣ <strong>Skripte verwalten:</strong></p>
+<ul>
+<li>Liste der verfügbaren Skripte</li>
+<li>Neues Skript hochladen</li>
+<li>Skript an Clients senden</li>
+</ul>
+<p>4️⃣ <strong>Nachrichten senden:</strong></p>
+<ul>
+<li>Direktnachrichten an einen Client</li>
+<li>Massenversand an alle Clients</li>
+</ul>
+<p>5️⃣ <strong>Datenbankansicht:</strong></p>
+<ul>
+<li>Inbox-Daten ansehen</li>
+<li>Verarbeitung überprüfen</li>
+</ul>
+<hr>
+<h2 class="atx" id="🚀-beispiel-ablaufe"><strong>🚀 Beispiel-Abläufe</strong></h2>
+<h3 class="atx" id="📌-ein-client-meldet-sich-beim-server-an"><strong>📌 Ein Client meldet sich beim Server an</strong></h3>
+<ul>
+<li>Client startet und verbindet sich über WebSockets.</li>
+<li>Server speichert den Client in der Datenbank und zeigt ihn in der Web-Oberfläche an.</li>
+</ul>
+<h3 class="atx" id="📌-ein-skript-wird-an-einen-client-gesendet"><strong>📌 Ein Skript wird an einen Client gesendet</strong></h3>
+<ul>
+<li>Admin wählt ein <strong>PowerShell-Skript</strong> aus und sendet es an den Client.</li>
+<li>Der Client empfängt das Skript, führt es aus und sendet das Ergebnis zurück.</li>
+</ul>
+<h3 class="atx" id="📌-datenubertragung-vom-client-zum-server"><strong>📌 Datenübertragung vom Client zum Server</strong></h3>
+<ul>
+<li>Client sendet <strong>Systeminformationen</strong> (z. B. Festplattenstatus, CPU-Auslastung).</li>
+<li>Der Server speichert die Daten und zeigt sie in der Web-Oberfläche an.</li>
+</ul>
+<h3 class="atx" id="📌-admin-sendet-eine-nachricht-an-alle-clients"><strong>📌 Admin sendet eine Nachricht an alle Clients</strong></h3>
+<ul>
+<li>Admin gibt eine Nachricht ein und klickt auf „Senden“.</li>
+<li>Alle Clients empfangen die Nachricht und zeigen sie an.</li>
+</ul>
+<hr>
+<h2 class="atx" id="🛠-technische-details"><strong>🛠 Technische Details</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Funktion</strong></th>
+<th><strong>Beschreibung</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>WebSockets</strong></td>
+<td>Echtzeit-Kommunikation zwischen Server &amp; Clients</td>
+</tr>
+<tr>
+<td><strong>Flask + Flask-SocketIO</strong></td>
+<td>Webserver für API &amp; Web-Oberfläche</td>
+</tr>
+<tr>
+<td><strong>SQLAlchemy</strong></td>
+<td>Datenbankverwaltung</td>
+</tr>
+<tr>
+<td><strong>REST API</strong></td>
+<td>Anfragen an den Server senden</td>
+</tr>
+<tr>
+<td><strong>Web-GUI</strong></td>
+<td>Verwaltung der Clients</td>
+</tr>
+<tr>
+<td><strong>Inbox-System</strong></td>
+<td>Temporäre Speicherung von Client-Daten</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 class="atx" id="📌-fazit"><strong>📌 Fazit</strong></h2>
+<p>✅ Der Server ermöglicht eine <strong>zentrale Verwaltung</strong> von Clients.<br>✅ Datenübertragung erfolgt über <strong>WebSockets</strong> und <strong>API</strong>.<br>✅ <strong>Admins können Skripte, Nachrichten und Steuerbefehle zentral verwalten.</strong><br>✅ Alle Daten werden in einer <strong>Datenbank</strong> gespeichert und sind abrufbar.</p>
+<hr>
+<h1 class="atx" id="python-server">Python Server</h1>
+<p>Anleitung für die Installation der Vorraussetzungen am Windows Server. Da es sich um Python handelt, kann dieser Server auch auf einem Linux Server ausgeführt werden.</p>
+<h3 class="atx" id="anleitung">Anleitung</h3>
+<h3 class="atx" id="📌-anleitung-zur-installation-und-ausfuhrung-des-python-skripts-unter-windows"><strong>📌 Anleitung zur Installation und Ausführung des Python-Skripts unter Windows</strong></h3>
+<p>Dieses Skript verwendet <strong>Flask</strong>, <strong>SQLAlchemy</strong>, <strong>WebSockets</strong> und weitere Abhängigkeiten. Die folgenden Schritte führen dich durch die Installation und den Start unter <strong>Windows</strong>.</p>
+<hr>
+<h2 class="atx" id="1️⃣-voraussetzungen"><strong>1️⃣ Voraussetzungen</strong></h2>
+<p>Bevor du startest, stelle sicher, dass du <strong>Python 3.8+</strong> auf deinem Windows-System installiert hast.</p>
+<p>🔹 <strong>Überprüfung der Python-Installation</strong><br>Öffne eine <strong>PowerShell</strong> oder <strong>Eingabeaufforderung (cmd)</strong> und gib ein:</p>
+<pre><code class="fenced-code-block language-powershell">python <span class="token operator">--</span>version</code></pre>
+<p>Falls Python nicht installiert ist, kannst du es von <a href="https://www.python.org/downloads/">python.org</a> herunterladen.</p>
+<hr>
+<h2 class="atx" id="2️⃣-virtuelle-umgebung-erstellen-empfohlen"><strong>2️⃣ Virtuelle Umgebung erstellen (empfohlen)</strong></h2>
+<p>Es ist sinnvoll, eine <strong>virtuelle Umgebung</strong> zu nutzen, damit sich die Abhängigkeiten nicht mit anderen Projekten vermischen.</p>
+<p>Öffne eine <strong>PowerShell</strong> oder <strong>Eingabeaufforderung (cmd)</strong> und navigiere in das Verzeichnis, wo das Skript liegt:</p>
+<pre><code class="fenced-code-block language-powershell">cd C:\Pfad\zum\Projekt</code></pre>
+<p>Erstelle eine neue virtuelle Umgebung:</p>
+<pre><code class="fenced-code-block language-powershell">python <span class="token operator">-</span>m venv venv</code></pre>
+<p>Aktiviere die virtuelle Umgebung:</p>
+<pre><code class="fenced-code-block language-powershell">venv\Scripts\activate</code></pre>
+<p>💡 <strong>Hinweis:</strong> Falls du eine Fehlermeldung erhältst, dass das Skript blockiert ist, setze diesen Befehl:</p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Set-ExecutionPolicy</span> Unrestricted <span class="token operator">-</span>Scope <span class="token keyword">Process</span></code></pre>
+<p>Nun kannst du die virtuelle Umgebung mit <code>venv\Scripts\activate</code> aktivieren.</p>
+<hr>
+<h2 class="atx" id="3️⃣-notwendige-abhangigkeiten-installieren"><strong>3️⃣ Notwendige Abhängigkeiten installieren</strong></h2>
+<p>Installiere nun alle <strong>benötigten Python-Pakete</strong> mit <code>pip</code>:</p>
+<pre><code class="fenced-code-block language-powershell">pip install flask flask-socketio flask-sqlalchemy websockets sqlalchemy</code></pre>
+<p>Falls eine <strong>MySQL-Datenbank</strong> verwendet wird, benötigst du zusätzlich:</p>
+<pre><code class="fenced-code-block language-powershell">pip install pymysql</code></pre>
+<p>Falls <strong>PostgreSQL</strong> verwendet wird, dann:</p>
+<pre><code class="fenced-code-block language-powershell">pip install psycopg2</code></pre>
+<p>Falls du dir nicht sicher bist, welche Abhängigkeiten fehlen, kannst du alle Pakete aus einer <strong><code>requirements.txt</code></strong> installieren:</p>
+<pre><code class="fenced-code-block language-powershell">pip install <span class="token operator">-</span>r requirements<span class="token punctuation">.</span>txt</code></pre>
+<hr>
+<h2 class="atx" id="4️⃣-das-skript-starten"><strong>4️⃣ Das Skript starten</strong></h2>
+<p>Navigiere zum <strong>Skriptverzeichnis</strong>, falls du es noch nicht getan hast:</p>
+<pre><code class="fenced-code-block language-powershell">cd C:\Pfad\zum\Projekt</code></pre>
+<p>Starte das Skript mit:</p>
+<pre><code class="fenced-code-block language-powershell">python scriptname<span class="token punctuation">.</span>py</code></pre>
+<p>Falls Flask standardmäßig auf <strong>Port 5001</strong> laufen soll, kannst du es explizit so starten:</p>
+<pre><code class="fenced-code-block language-powershell">python scriptname<span class="token punctuation">.</span>py <span class="token operator">--</span>host=0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0<span class="token punctuation">.</span>0 <span class="token operator">--</span>port=5001</code></pre>
+<p>Falls du es im Hintergrund ausführen möchtest (PowerShell):</p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Start-Process</span> python <span class="token operator">-</span>ArgumentList <span class="token string">"scriptname.py"</span></code></pre>
+<hr>
+<h2 class="atx" id="5️⃣-web-oberflache-andamp-api-testen"><strong>5️⃣ Web-Oberfläche &amp; API testen</strong></h2>
+<p>Sobald das Skript läuft, kannst du <strong>die Web-Oberfläche</strong> in deinem Browser öffnen:</p>
+<p>🔗 <strong><a href="http://localhost:5001/">http://localhost:5001/</a></strong><br>Hier kannst du sehen, welche Clients verbunden sind.</p>
+<p>Falls du die API testen willst, kannst du mit <strong>Postman</strong> oder <strong>curl</strong> eine Anfrage senden. Zum Beispiel:</p>
+<pre><code class="fenced-code-block language-powershell">curl <span class="token operator">-</span>X GET http:<span class="token operator">/</span><span class="token operator">/</span>localhost:5001/clients</code></pre>
+<hr>
+<h2 class="atx" id="6️⃣-automatischer-neustart-nach-einem-fehler"><strong>6️⃣ Automatischer Neustart nach einem Fehler</strong></h2>
+<p>Falls du möchtest, dass das Skript automatisch <strong>neu startet</strong>, wenn es abstürzt, kannst du eine einfache <strong>Endlosschleife</strong> in PowerShell nutzen:</p>
+<pre><code class="fenced-code-block language-powershell"><span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">$true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    python scriptname<span class="token punctuation">.</span>py
+    <span class="token function">Start-Sleep</span> <span class="token operator">-</span>Seconds 5  <span class="token comment"># Wartezeit vor Neustart</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Falls du es als <strong>Windows-Dienst</strong> ausführen möchtest, kannst du <code>nssm</code> oder <code>sc.exe</code> verwenden.</p>
+<hr>
+<h2 class="atx" id="7️⃣-websocket-server-testen"><strong>7️⃣ WebSocket-Server testen</strong></h2>
+<p>Falls du den <strong>WebSocket-Server</strong> testen möchtest, kannst du <code>wscat</code> (Node.js) oder eine WebSocket-Client-Anwendung nutzen.</p>
+<h3 class="atx" id="mit-wscat-nodejs"><strong>Mit <code>wscat</code> (Node.js)</strong>:</h3>
+<ol>
+<li><p>Installiere <code>wscat</code>:</p>
+<pre><code class="fenced-code-block language-powershell">npm install <span class="token operator">-</span>g wscat</code></pre>
+</li>
+<li><p>Verbinde dich mit dem WebSocket-Server:</p>
+<pre><code class="fenced-code-block language-powershell">wscat <span class="token operator">-</span>c ws:<span class="token operator">/</span><span class="token operator">/</span>localhost:8765</code></pre>
+</li>
+</ol>
+<p>Falls du keinen WebSocket-Client hast, kannst du <a href="https://www.piesocket.com/websocket-tester">websocket.org</a> nutzen.</p>
+<hr>
+<h2 class="atx" id="8️⃣-skript-im-hintergrund-als-dienst-ausfuhren"><strong>8️⃣ Skript im Hintergrund als Dienst ausführen</strong></h2>
+<p>Falls das Skript <strong>dauerhaft</strong> im Hintergrund laufen soll, kannst du es mit <strong>Task Scheduler</strong> oder als Windows-Dienst einrichten.</p>
+<h3 class="atx" id="option-1-mit-task-scheduler"><strong>Option 1: Mit Task Scheduler</strong></h3>
+<ol>
+<li><p>Öffne <strong>Task Scheduler</strong> (<code>taskschd.msc</code>).</p>
+</li>
+<li><p>Erstelle eine <strong>neue Aufgabe</strong>.</p>
+</li>
+<li><p>Wähle <strong>"Beim Systemstart ausführen"</strong>.</p>
+</li>
+<li><p>Setze das <strong>Skript als Startprogramm</strong>:</p>
+<pre><code class="fenced-code-block language-powershell">python C:\Pfad\zum\Projekt\scriptname<span class="token punctuation">.</span>py</code></pre>
+</li>
+<li><p>Aktiviere <strong>"Wiederholen alle 5 Minuten"</strong>, falls es abstürzt.</p>
+</li>
+</ol>
+<h3 class="atx" id="option-2-als-windows-dienst-mit-nssm"><strong>Option 2: Als Windows-Dienst mit <code>nssm</code></strong></h3>
+<p>Falls du möchtest, dass es als <strong>Windows-Dienst</strong> läuft:</p>
+<ol>
+<li><p>Lade <code>nssm.exe</code> von <a href="https://nssm.cc/">nssm.cc</a> herunter.</p>
+</li>
+<li><p>Installiere den Dienst:</p>
+<pre><code class="fenced-code-block language-powershell">nssm install MeinPythonService C:\Pfad\zu\python<span class="token punctuation">.</span>exe C:\Pfad\zum\Projekt\scriptname<span class="token punctuation">.</span>py</code></pre>
+</li>
+<li><p>Starte den Dienst:</p>
+<pre><code class="fenced-code-block language-powershell">net <span class="token function">start</span> MeinPythonService</code></pre>
+</li>
+</ol>
+<hr>
+<h2 class="atx" id="9️⃣-fehlerbehebung"><strong>9️⃣ Fehlerbehebung</strong></h2>
+<p>Falls das Skript <strong>nicht startet</strong>, überprüfe:</p>
+<ul>
+<li><p><strong>Sind alle Abhängigkeiten installiert?</strong></p>
+<pre><code class="fenced-code-block language-powershell">pip list</code></pre>
+</li>
+<li><p><strong>Läuft bereits eine andere Instanz auf Port 5001 oder 8765?</strong></p>
+<pre><code class="fenced-code-block language-powershell">netstat <span class="token operator">-</span>ano <span class="token punctuation">|</span> findstr :5001</code></pre>
+</li>
+<li><p><strong>Fehlende Berechtigungen?</strong></p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Set-ExecutionPolicy</span> Unrestricted <span class="token operator">-</span>Scope <span class="token keyword">Process</span></code></pre>
+</li>
+</ul>
+<p>Falls du trotzdem Probleme hast, kannst du das <strong>Logfile (<code>server.log</code>)</strong> analysieren oder eine Debug-Ausgabe aktivieren:</p>
+<pre><code class="fenced-code-block language-powershell">python scriptname<span class="token punctuation">.</span>py <span class="token operator">--</span>debug</code></pre>
+<hr>
+<pre><code class="fenced-code-block language-Python">import asyncio
+import json
+import logging
+import websockets
+import time
+import uuid
+import os
+import base64
+import socket
+import threading
+from datetime import datetime, timezone
+
+# Flask &amp; Flask-Extensions
+from flask import Flask, render_template, request, jsonify
+from flask_socketio import SocketIO
+from flask_sqlalchemy import SQLAlchemy
+
+# SQLAlchemy &amp; Datenbank-Modelle
+from config import Config
+from models import db, Inbox, Asset, ClientUser, SystemInfo, WSUSScanResult, WSUSDownloadInfo
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text, inspect, literal, String, NVARCHAR
+
+# WebSocket-Fehlermanagement
+from websockets.exceptions import ConnectionClosed
+
+# 🔧 Konfiguration &amp; globale Variablen
+SCRIPT_DIR = os.path.join(os.path.dirname(__file__), "scriptfile")  # 📂 Skriptverzeichnis
+CHUNK_SIZE = 4000  # Maximale Größe pro Chunk
+
+# 🔄 Clients verwalten
+clients = {}
+previous_clients = {}
+
+# 📌 Flask &amp; SocketIO Setup
+app = Flask(__name__)
+app.config.from_object(Config)  # Lade Konfiguration aus `config.py`
+db.init_app(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# 🔍 **Logging-Konfiguration**
+logging.basicConfig(
+    filename="server.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+console_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+console_handler.setFormatter(console_formatter)
+logging.getLogger().addHandler(console_handler)
+
+# --------------------------------------
+# 🌐 **Asnc Functions                 **
+# --------------------------------------
+
+# --------------------------------------
+# 🌐 **Functions                      **
+# --------------------------------------
+
+def get_tables():
+    """Gibt alle Tabellen in der Datenbank zurück."""
+    try:
+        logging.info("🔄 Lade Tabellen aus der Datenbank...")
+        db.Model.metadata.reflect(bind=db.engine)
+        tables = list(db.Model.metadata.tables.keys())
+        logging.info(f"📋 Tabellen gefunden: {tables}")
+        return tables
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
+        return []
+
+
+def get_column_lengths(table_name):
+    """Liest die maximale Feldlängen der Spalten einer Tabelle aus."""
+    try:
+        logging.info(f"🔍 Prüfe Spaltenlängen für Tabelle `{table_name}`")
+
+        # Metadaten aktualisieren
+        db.Model.metadata.reflect(bind=db.engine, raiseerr=True)
+
+        # Tabelle abrufen
+        table = db.Model.metadata.tables.get(table_name)
+
+        if table is None:
+            logging.error(f"❌ Tabelle `{table_name}` nicht gefunden!")
+            raise ValueError(f"❌ Tabelle `{table_name}` nicht gefunden.")
+
+        logging.info(f"✅ Tabelle `{table_name}` gefunden. Starte Spaltenprüfung...")
+
+        column_lengths = {}
+
+        for column in table.columns:
+            logging.info(f"ℹ️ Prüfe Feld `{column.name}`...")
+
+            if isinstance(column.type, (String, NVARCHAR)) and column.type.length:
+                column_lengths[column.name] = column.type.length
+                logging.info(f"✅ Feld `{column.name}` hat eine max. Länge von {column.type.length}")
+
+        logging.debug(f"📊 Erkannte Feldlängen für `{table_name}`: {column_lengths}")
+        return column_lengths
+
+    except Exception as e:
+        logging.error(f"🚨 Fehler in `get_column_lengths({table_name})`: {str(e)}")
+        raise
+
+
+def truncate_values(column_values, column_lengths):
+    """Kürzt die Werte basierend auf den maximalen Feldlängen."""
+    logging.info(f"🔍 truncate_values `{column_values}`")
+    for column, max_length in column_lengths.items():
+        if column in column_values and isinstance(column_values[column], str):
+            original_value = column_values[column]
+            truncated_value = original_value[:max_length]
+            column_values[column] = truncated_value
+            if original_value != truncated_value:
+                logging.warning(f"⚠️ Wert für `{column}` wurde von {len(original_value)} auf {max_length} Zeichen gekürzt!")
+    return column_values
+
+def process_inbox():
+    """Verarbeitet alle noch nicht bearbeiteten Einträge in der Inbox-Tabelle."""
+    logging.info("🟢 Starte `process_inbox`-Thread...")
+
+    while True:
+        with app.app_context():
+            try:
+                db.Model.metadata.reflect(bind=db.engine)  # 🔄 Metadaten synchronisieren
+                logging.info(f"📋 Tabellen: {db.Model.metadata.tables.keys()}")
+
+                logging.info("🛠️ Filtere nach acx_inbox_processing_state='pending'")
+                pending_entries = Inbox.query.filter(Inbox.acx_inbox_processing_state == literal("pending")).all()
+
+                if not pending_entries:
+                    logging.info("✅ Keine neuen Einträge zum Verarbeiten.")
+                else:
+                    for entry in pending_entries:
+                        logging.info(f"🔄 Verarbeite Inbox-ID: {entry.acx_inbox_id}")
+                        entry.acx_inbox_processing_state = "running"
+                        entry.acx_inbox_processing_start = datetime.now(timezone.utc)
+                        db.session.commit()
+
+                        try:
+                            logging.info(f"📥 Lade JSON-Inhalt für Inbox-ID: {entry.acx_inbox_id}")
+                            json_content = json.loads(entry.acx_inbox_content)
+                            logging.debug(f"📄 JSON-Inhalt: {json_content}")
+
+                            content_section = json_content.get("Content")
+                            if not isinstance(content_section, dict):
+                                raise ValueError("❌ `Content`-Bereich fehlt oder ist ungültig")
+
+                            table_name = content_section.get("TableName", "").strip()
+                            data_entries = content_section.get("Data", [])
+                            mappings = content_section.get("FieldMappings", [])
+
+                            if not table_name or not data_entries or not mappings:
+                                raise ValueError("❌ Fehlende Daten oder Mappings im JSON")
+
+                            column_lengths = get_column_lengths(table_name)
+
+                            for record in data_entries:
+                                column_values = {}
+                                logging.info(f"📑 Verarbeite Datensatz: {record}")
+
+                                for mapping in mappings:
+                                    db_field = mapping.get("TargetField", "").strip()
+                                    expression = mapping.get("Expression", "").strip()
+
+                                    if not db_field:
+                                        raise ValueError("❌ `TargetField` fehlt in Mappings")
+                                    if not expression:
+                                        raise ValueError(f"❌ `Expression` fehlt für {db_field}")
+
+                                    if expression == "NewGUID()":
+                                        column_values[db_field] = str(uuid.uuid4())
+                                    elif expression.startswith("{") and expression.endswith("}"):
+                                        json_field = expression.strip("{}")
+                                        column_values[db_field] = record.get(json_field, "")
+                                    else:
+                                        column_values[db_field] = expression
+
+                                    logging.debug(f"🔄 Mapping `{db_field}`: `{expression}` -&gt; `{column_values[db_field]}`")
+
+                                column_values = truncate_values(column_values, column_lengths)
+
+                                insert_query = text(f"""
+                                    INSERT INTO {table_name} ({', '.join(column_values.keys())}) 
+                                    VALUES ({', '.join([f':{key}' for key in column_values.keys()])})
+                                """)
+
+                                logging.info(f"📥 SQL Insert Query: {insert_query}")
+                                logging.debug(f"📊 Insert-Daten: {column_values}")
+
+                                db.session.execute(insert_query, column_values)
+
+                            db.session.commit()
+                            entry.acx_inbox_processing_state = "success"
+                            entry.acx_inbox_processing_end = datetime.now(timezone.utc)
+                            entry.acx_inbox_processing_log = "Verarbeitung erfolgreich"
+                            db.session.commit()
+                            logging.info(f"✅ Verarbeitung für Inbox-ID {entry.acx_inbox_id} abgeschlossen!")
+
+                        except SQLAlchemyError as e:
+                            logging.error(f"❌ SQL-Fehler bei Inbox-ID {entry.acx_inbox_id}: {str(e)}")
+                            db.session.rollback()
+                            entry.acx_inbox_processing_state = "error"
+                            entry.acx_inbox_processing_log = str(e)
+                            db.session.commit()
+
+                        except Exception as e:
+                            logging.error(f"❌ Fehler bei Inbox-ID {entry.acx_inbox_id}: {str(e)}")
+                            entry.acx_inbox_processing_state = "error"
+                            entry.acx_inbox_processing_log = str(e)
+                            db.session.commit()
+
+            except Exception as e:
+                logging.error(f"❌ Fehler in `process_inbox`: {str(e)}")
+
+        time.sleep(10)  # Alle 10 Sekunden prüfen
+
+
+
+def is_port_in_use(port):
+    """Prüft, ob der angegebene Port bereits in Benutzung ist."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("0.0.0.0", port)) == 0
+
+def check_for_refresh():
+    """Überprüft, ob sich die Client-Liste geändert hat, und sendet nur dann ein Refresh"""
+    global previous_clients
+    current_clients = {client_id: {"hostname": data["hostname"], "ip": data["ip"]} for client_id, data in clients.items()}
+
+    if previous_clients != current_clients:  # 🔍 Vergleiche mit vorheriger Liste
+        previous_clients = current_clients  # 🔄 Update der vorherigen Clients
+        socketio.emit("refresh", to=None)
+        logging.info("🔄 Client-Liste geändert, Refresh gesendet.")
+        print("🔄 Client-Liste geändert, Refresh gesendet.")
+
+
+# --------------------------------------
+# 🌐 **Flask-Routen für Web-Oberfläche**
+# --------------------------------------
+
+
+@app.route("/")
+def index():
+    """Zeigt die HTML-Webseite mit den verbundenen Clients an."""
+    logging.debug("📄 HTML-Seite mit aktuellen Clients geöffnet.")
+    print(f"Aktuelle Clients: {clients}")
+    return render_template("index.html", clients=clients)
+
+@app.route("/showclients")
+def showclients():
+    """Zeigt die HTML-Webseite mit den verbundenen Clients an."""
+    logging.debug("📄 HTML-Seite mit aktuellen Clients geöffnet.")
+    print(f"Aktuelle Clients: {clients}")
+    return render_template("clients.html", clients=clients)
+
+
+@app.route("/client/&lt;client_id&gt;")
+def client_details(client_id):
+    """Zeigt die Details eines bestimmten Clients an."""
+    client = Asset.query.filter_by(client_id=client_id).first()  # 🔄 Asset statt Client
+
+    if not client:
+        logging.error(f"❌ Client nicht gefunden: {client_id}")
+        return "Client nicht gefunden", 404
+
+    tables = get_tables()
+    return render_template("client_details.html", client=client, tables=tables, client_id=client_id)
+
+
+@app.route("/table/&lt;table_name&gt;")
+def table_data(table_name):
+    """Zeigt alle Daten aus einer bestimmten Tabelle an."""
+
+    # 🛠️ Prüfen, ob die Tabelle existiert
+    db.Model.metadata.reflect(bind=db.engine)
+    if table_name not in db.Model.metadata.tables:
+        logging.error(f"❌ Fehler: Tabelle `{table_name}` existiert nicht in der Datenbank!")
+        return f"Fehler: Tabelle `{table_name}` nicht gefunden!", 404
+
+    logging.info(f"📊 Lade alle Daten aus `{table_name}`")
+
+    try:
+        table = db.Model.metadata.tables[table_name]
+        query = table.select()  # 🔄 KEINE Filterung auf client_id oder asset_id
+
+        with db.engine.connect() as connection:
+            result = connection.execute(query).fetchall()
+
+        # 📌 Korrektur: Spaltennamen aus dem Table-Objekt holen
+        column_names = [column.name for column in table.columns]
+
+        return render_template("table_data.html", table_name=table_name, data=result, columns=column_names)
+
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Abrufen der Daten für `{table_name}`: {str(e)}")
+        return f"Interner Serverfehler: {str(e)}", 500
+
+@app.route("/inbox", methods=["POST"])
+def inbox():
+    """Empfängt JSON-Daten und speichert sie ungeprüft in die Inbox-Tabelle zur späteren Verarbeitung."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "❌ Leere Anfrage erhalten"}), 400
+
+        # ✅ JSON als Zeichenkette speichern
+        json_content = json.dumps(data, ensure_ascii=False)
+
+        # 📥 Neuen Inbox-Eintrag erstellen
+        new_entry = Inbox(
+            acx_inbox_name=data.get("MetaData", {}).get("Name", "Unbekannt"),
+            acx_inbox_description=data.get("MetaData", {}).get("Description", "Keine Beschreibung"),
+            acx_inbox_creator=data.get("MetaData", {}).get("Creator", "Unbekannt"),
+            acx_inbox_vendor=data.get("MetaData", {}).get("Vendor", "Unbekannt"),
+            acx_inbox_content_type=data.get("MetaData", {}).get("ContentType", "unknown"),
+            acx_inbox_content=json_content,  # Ungeprüftes JSON speichern
+        )
+
+        db.session.add(new_entry)
+        db.session.commit()
+
+        logging.info(f"✅ Neuer JSON-Eintrag gespeichert in Inbox-ID: {new_entry.acx_inbox_id}")
+        return jsonify({"message": "✅ Daten erfolgreich gespeichert", "InboxID": str(new_entry.acx_inbox_id)}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"❌ Fehler beim Speichern in Inbox: {str(e)}")
+        return jsonify({"error": "Interner Serverfehler", "details": str(e)}), 500
+
+@app.route("/clients", methods=["GET"])
+def get_clients():
+    """Gibt die Liste der verbundenen Clients als JSON zurück"""
+    logging.debug("📄 Clients API aufgerufen.")
+
+    serializable_clients = {
+        client_id: {"hostname": data["hostname"], "ip": data["ip"]}
+        for client_id, data in clients.items()
+    }
+
+    return jsonify(serializable_clients)
+
+@app.route("/send_message", methods=["POST"])
+def send_message():
+    """Sendet eine Nachricht an einen bestimmten Client"""
+    client_id = request.form.get("client_id")
+    message = request.form.get("message")
+
+    if not client_id or not message:
+        return json.dumps({"status": "error", "message": "Client-ID oder Nachricht fehlt!"}), 400
+
+    if client_id in clients:
+        ws = clients[client_id]["websocket"]
+
+        if ws.close_code is None:
+            try:
+                # Nachricht als JSON-Format senden
+                message_data = {
+                    "action": "message",
+                    "content": message
+                }
+
+                asyncio.run(ws.send(json.dumps(message_data, ensure_ascii=False)))
+
+                return json.dumps({"status": "success", "message": "Nachricht gesendet"}), 200
+            except Exception as e:
+                return json.dumps({"status": "error", "message": f"Fehler beim Senden: {str(e)}"}), 500
+        else:
+            del clients[client_id]
+            return json.dumps({"status": "error", "message": "Client nicht mehr verbunden"}), 410
+
+    return json.dumps({"status": "error", "message": "Client nicht gefunden"}), 404
+
+
+@app.route("/send_message_all", methods=["POST"])
+def send_message_all():
+    """Sendet eine Nachricht an alle verbundenen Clients"""
+    message = request.form.get("message")
+
+    if not message:
+        return "Fehler: Nachricht fehlt!", 400
+
+    logging.info(f"📤 Nachricht an alle Clients senden: {message}")
+
+    for client_id, client in clients.items():
+        ws = client["websocket"]
+        if ws.close_code is None:  # Verbindung ist noch offen
+            try:
+                asyncio.run(ws.send(message))
+            except Exception as e:
+                logging.error(f"❌ Fehler beim Senden an {client_id}: {str(e)}")
+
+    return "Gesendet", 200
+
+@app.route("/send_script", methods=["POST"])
+def send_script():
+    """Sendet ein Skript in mehreren Chunks an einen Client"""
+    client_id = request.form.get("client_id")
+    script_name = request.form.get("script_name")
+    script_type = request.form.get("script_type")  # 🆕 Skripttyp erfassen
+
+    if not client_id or not script_name or not script_type:
+        return "Fehler: Client-ID, Skriptnamen oder Skripttyp fehlt!", 400
+
+    script_path = os.path.join(SCRIPT_DIR, script_name)
+
+    if not os.path.exists(script_path):
+        return f"Fehler: Skript {script_name} nicht gefunden!", 404
+
+    if client_id in clients:
+        ws = clients[client_id]["websocket"]
+
+        if ws.close_code is None:
+            try:
+                with open(script_path, "rb") as script_file:
+                    script_content = script_file.read()
+                    script_content_base64 = base64.b64encode(script_content).decode("utf-8")  # 🆕 Base64-Kodierung
+
+                # Skript in Chunks aufteilen
+                total_chunks = (len(script_content_base64) // CHUNK_SIZE) + 1
+
+                for chunk_index in range(total_chunks):
+                    start = chunk_index * CHUNK_SIZE
+                    end = start + CHUNK_SIZE
+                    script_chunk = script_content_base64[start:end]
+
+                    chunk_message = json.dumps({
+                        "action": "upload_script_chunk",
+                        "script_name": script_name,
+                        "chunk_index": chunk_index,
+                        "total_chunks": total_chunks,
+                        "script_chunk": script_chunk,
+                        "script_type": script_type
+                    }, ensure_ascii=False)
+
+                    asyncio.run(ws.send(chunk_message))
+                    print(f"📤 Gesendet: Chunk {chunk_index+1}/{total_chunks} ({len(script_chunk)} Bytes)")
+
+                return "Skript in Chunks gesendet", 200
+            except Exception as e:
+                return f"Fehler beim Senden: {str(e)}", 500
+        else:
+            del clients[client_id]
+            return "Client nicht mehr verbunden", 410
+
+    return "Client nicht gefunden", 404
+
+
+@app.route("/send_script_all", methods=["POST"])
+def send_script_all():
+    """Sendet ein Skript an alle Clients mit Skripttyp"""
+    script_name = request.form.get("script_name")
+    script_type = request.form.get("script_type")  # Skripttyp hinzufügen
+
+    if not script_name or not script_type:
+        return "Fehler: Skriptnamen oder Skripttyp fehlt!", 400
+
+    script_path = os.path.join(SCRIPT_DIR, script_name)
+
+    if not os.path.exists(script_path):
+        return f"Fehler: Skript {script_name} nicht gefunden!", 404
+
+    logging.info(f"📤 Sende Skript {script_name} ({script_type}) an alle Clients...")
+
+    try:
+        with open(script_path, "r", encoding="utf-8") as script_file:
+            script_content = script_file.read()
+
+        # Base64-Kodierung des Skriptinhalts
+        script_content_base64 = base64.b64encode(script_content).decode("utf-8")  # 🆕 Base64-Kodierung
+
+        script_message = json.dumps({
+            "action": "execute_script",
+            "script_name": script_name,
+            "script_content": script_content_base64,
+            "script_type": script_type  # Skripttyp mit einfügen
+        })
+
+        for client_id, client in clients.items():
+            ws = client["websocket"]
+            if ws.close_code is None:
+                try:
+                    asyncio.run(ws.send(script_message))
+                    logging.info(f"✅ Skript an {client_id} gesendet.")
+                except Exception as e:
+                    logging.error(f"❌ Fehler beim Senden an {client_id}: {str(e)}")
+
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Lesen des Skripts: {str(e)}")
+        return f"Fehler beim Lesen des Skripts: {str(e)}", 500
+
+    return "Skript an alle gesendet", 200
+
+@app.route("/get_scripts", methods=["GET"])
+def get_scripts():
+    """Liefert eine Liste der verfügbaren Skripte im Skriptverzeichnis (inkl. Unterverzeichnisse 1. Ebene)"""
+    allowed_extensions = {".ps1", ".bat", ".py", ".sh", ".txt"}
+    ignored_dirs = {"_obsolete_"}
+
+    if not os.path.exists(SCRIPT_DIR):
+        return jsonify({"error": "Skriptverzeichnis nicht gefunden!"}), 500
+
+    try:
+        scripts = []
+
+        # 🔍 Durchlaufe das Hauptverzeichnis
+        for root, dirs, files in os.walk(SCRIPT_DIR):
+            # Nur die erste Ebene der Unterverzeichnisse betrachten
+            rel_root = os.path.relpath(root, SCRIPT_DIR)  # Relativer Pfad zum Root
+            if rel_root in ignored_dirs:
+                continue  # 🚫 Verzeichnis _obsolete_ überspringen
+
+            # 🔄 Unterverzeichnisse nach erster Ebene abschneiden
+            if os.path.dirname(rel_root):
+                continue  # Verzeichnisse aus tieferen Ebenen ignorieren
+
+            for file in files:
+                ext = os.path.splitext(file)[1]
+                if ext in allowed_extensions:
+                    script_path = os.path.join(rel_root, file) if rel_root != "." else file  # 🎯 Pfad zusammensetzen
+                    scripts.append({
+                        "name": script_path.replace("\\", "/"),  # Konsistente Pfade für Windows/Linux
+                        "type": "powershell" if ext == ".ps1" else
+                                "bat" if ext == ".bat" else
+                                "python" if ext == ".py" else
+                                "linuxshell" if ext == ".sh" else
+                                "text"
+                    })
+
+        return jsonify(scripts)
+
+    except Exception as e:
+        return jsonify({"error": f"Fehler beim Abrufen der Skripte: {str(e)}"}), 500
+
+# ------------------------------------
+# 🔄 **WebSocket-Handling**
+# ------------------------------------
+
+async def send_message_to_client(client_id, message):
+    """📩 Sendet eine Nachricht an einen Client."""
+    if client_id in clients:
+        ws = clients[client_id]["websocket"]
+        if ws and not ws.closed:
+            await ws.send(json.dumps({"action": "message", "content": message}))
+
+async def send_message_to_all(message):
+    """📤 Sendet eine Nachricht an alle verbundenen Clients."""
+    for client_id in clients:
+        await send_message_to_client(client_id, message)
+
+async def handle_client(websocket):
+    """Verarbeitet eingehende WebSocket-Verbindungen von Clients mit erweitertem Logging"""
+    try:
+        client_ip = websocket.remote_address[0] if websocket.remote_address else "Unbekannt"
+        logging.info(f"🔌 Neuer Client verbunden von {client_ip}")
+
+        async for message in websocket:
+            try:
+                logging.info(f"📩 Eingehende Nachricht von {client_ip}: {message}")
+
+                data = json.loads(message)
+                action = data.get("action")
+
+                if action == "register":
+                    client_id = data.get("client_id")
+                    hostname = data.get("hostname")
+                    ip_address = data.get("ip")
+
+                    # **Datenvalidierung**
+                    if not client_id or not hostname or not ip_address:
+                        logging.warning(f"⚠️ Ungültige Registrierungsdaten von {client_ip}: {data}")
+                        await websocket.send(json.dumps({"status": "error", "message": "Invalid registration data"}))
+                        continue
+
+                    # **Client im lokalen Dictionary speichern**
+                    clients[client_id] = {"websocket": websocket, "hostname": hostname, "ip": ip_address}
+                    logging.info(f"📥 Neuer Client zwischengespeichert: {clients[client_id]}")
+
+                    # **✅ Datenbank-Operationen für `acx_asset`**
+                    with app.app_context():
+                        try:
+                            logging.info(f"🔎 Suche nach bestehendem Asset für Client {client_id}...")
+                            existing_asset = Asset.query.filter_by(client_id=client_id).first()
+
+                            if existing_asset:
+                                logging.info(f"🔄 Update bestehendes Asset: {existing_asset.client_id} (Last Seen: {existing_asset.last_seen})")
+                                existing_asset.last_seen = datetime.now()
+                            else:
+                                logging.info(f"🆕 Neues Asset wird erstellt für Client {client_id} ({hostname}, {ip_address})")
+                                new_asset = Asset(client_id=client_id, hostname=hostname, ip_address=ip_address)
+                                db.session.add(new_asset)
+
+                            db.session.commit()
+                            check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+                            logging.info(f"✅ Client {client_id} erfolgreich registriert oder aktualisiert in `acx_asset`")
+
+                        except SQLAlchemyError as e:
+                            db.session.rollback()
+                            logging.error(f"❌ Datenbankfehler bei Registrierung von {client_id}: {str(e)}")
+                            await websocket.send(json.dumps({"status": "error", "message": f"Database error: {str(e)}"}))
+                            continue
+                        except Exception as e:
+                            db.session.rollback()
+                            logging.error(f"❌ Unerwarteter Fehler bei DB-Operation für {client_id}: {str(e)}")
+                            await websocket.send(json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"}))
+                            continue
+
+                    # **✅ Bestätigung an den Client senden**
+                    response = json.dumps({"status": "registered"})
+                    await websocket.send(response)
+                    check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+                    logging.info(f"📤 Registrierungsbestätigung an {hostname} ({ip_address}) gesendet")
+
+                else:
+                    logging.warning(f"⚠️ Unbekannte Aktion von {client_ip}: {data}")
+                    check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+                    await websocket.send(json.dumps({"status": "error", "message": "Unknown action"}))
+
+            except json.JSONDecodeError:
+                logging.error(f"🚨 Ungültiges JSON von {client_ip}: {message}")
+                await websocket.send(json.dumps({"status": "error", "message": "Invalid JSON"}))
+            except Exception as e:
+                logging.error(f"❌ Allgemeiner Fehler in der Nachricht von {client_ip}: {str(e)}")
+                await websocket.send(json.dumps({"status": "error", "message": f"Processing error: {str(e)}"}))
+
+    except websockets.exceptions.ConnectionClosed as e:
+        logging.info(f"❌ WebSocket-Verbindung mit {client_ip} geschlossen: {e}")
+
+    finally:
+        # **Client aus der DB entfernen, wenn Verbindung verloren geht**
+        with app.app_context():
+            disconnected_clients = [key for key, value in clients.items() if value["websocket"] == websocket]
+
+            for client_id in disconnected_clients:
+                try:
+                    logging.info(f"🚪 Entferne Client {client_id} aus Clientspeicher...")
+                    clients.pop(client_id, None)
+
+                    logging.info(f"🔎 Suche nach Asset {client_id} in `acx_asset` zur Löschung...")
+                    asset = Asset.query.filter_by(client_id=client_id).first()
+
+                    if asset:
+                        logging.info(f"🗑️ Lösche Asset {client_id} aus `acx_asset`")
+                        # db.session.delete(asset)
+                        # db.session.commit()
+                        logging.info(f"✅ Client {client_id} erfolgreich aus `acx_asset` entfernt.")
+                    else:
+                        logging.warning(f"⚠️ Kein Asset-Eintrag für {client_id} gefunden. Kein Löschvorgang durchgeführt.")
+
+                except SQLAlchemyError as e:
+                    db.session.rollback()
+                    logging.error(f"❌ Fehler beim Löschen von Client {client_id} aus `acx_asset`: {str(e)}")
+                except Exception as e:
+                    logging.error(f"❌ Allgemeiner Fehler beim Entfernen von Client {client_id}: {str(e)}")
+
+        check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+        logging.info("🛑 Client-Entfernung abgeschlossen.")
+
+
+# 📌 **Server-Start**
+def run_flask():
+    """Startet den Flask-Server."""
+    socketio.run(app, host="0.0.0.0", port=5001, debug=False, allow_unsafe_werkzeug=True)
+
+async def start_websocket_server():
+    """Startet den WebSocket-Server"""
+    logging.info("websock check")
+    print("websock check")
+
+    if is_port_in_use(8765):
+        logging.error("❌ FEHLER: Port 8765 ist bereits belegt! WebSocket-Server kann nicht gestartet werden.")
+        print("❌ FEHLER: Port 8765 ist bereits belegt! WebSocket-Server kann nicht gestartet werden.")
+        return
+
+    logging.info("✅ WebSocket-Server gestartet auf Port 8765.")
+    print("✅ WebSocket-Server läuft auf Port 8765...")
+
+    async with websockets.serve(handle_client, "0.0.0.0", 8765):
+        print("🟢 WebSocket-Server wartet auf Clients...")
+        logging.info("🟢 WebSocket-Server wartet auf Clients...")
+        while True:
+            await asyncio.sleep(1)
+
+def main():
+    threading.Thread(target=run_flask, daemon=True).start()
+    threading.Thread(target=process_inbox, daemon=True).start()  # 🟢 Starte den Inbox-Handler im Hintergrund
+    asyncio.run(start_websocket_server())
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    main()
+</code></pre>
+<h1 class="atx" id="windows-clients">Windows Clients</h1>
+<h2 class="atx" id="🔹-windows-client-script-powershell">🔹 Windows Client Script: PowerShell</h2>
+<blockquote>
+<pre><code class="fenced-code-block language-Powershell">$serverUrl = "ws://85.215.147.108:8765"
+$clientId = [guid]::NewGuid().ToString()
+
+# **Neue Verzeichnisse setzen**
+$BaseDir = "$env:PROGRAMDATA\ondeso\workplace"
+$LogDir = "$BaseDir\logs"
+$ScriptDir = "$BaseDir\scriptfiles"
+$clientConfigPath = "$BaseDir\client_config.ini"
+$logFilePath = "$LogDir\client_stream.log"
+
+# Log-Datei konfigurieren
+#$tempScriptPath = "C:\TEMP\scriptfiles"
+
+
+# **Verzeichnisse erstellen, falls sie nicht existieren**
+If (!(Test-Path $BaseDir)) { New-Item -ItemType Directory -Path $BaseDir -Force | Out-Null }
+If (!(Test-Path $LogDir)) { New-Item -ItemType Directory -Path $LogDir -Force | Out-Null }
+If (!(Test-Path $ScriptDir)) { New-Item -ItemType Directory -Path $ScriptDir -Force | Out-Null }
+
+function Get-ClientId {
+    if (Test-Path $clientConfigPath) {
+        try {
+            $configContent = Get-Content -Path $clientConfigPath | Where-Object { $_ -match "^client_id=" }
+            if ($configContent) {
+                $storedGuid = $configContent -replace "client_id=", "" | ForEach-Object { $_.Trim() }
+                if ($storedGuid -match "^[0-9a-fA-F-]{36}$") {
+                    Write-Host "🔄 Verwende gespeicherte Client-GUID: $storedGuid"
+                    return $storedGuid
+                }
+            }
+        } catch {
+            Write-Host "❌ Fehler beim Lesen der INI-Datei: $_"
+        }
+    }
+
+    $newGuid = [guid]::NewGuid().ToString()
+    Write-Host "🆕 Generierte neue Client-GUID: $newGuid"
+
+    @"
+[CLIENT]
+client_id=$newGuid
+"@ | Set-Content -Path $clientConfigPath
+
+    return $newGuid
+}
+
+$clientId = Get-ClientId
+
+$computerName = $env:COMPUTERNAME
+$ipAddress = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -like "*Ethernet*" -or $_.InterfaceAlias -like "*Wi-Fi*" } | Select-Object -First 1).IPAddress
+
+# Speicher für Skript-Chunks
+$scriptChunks = @{}
+$scriptTotalChunks = @{}
+$scriptExecutionMode = @{}
+
+# Logging-Funktion
+function Write-Log {
+    param([string]$message)
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logMessage = "$timestamp - $message"
+    Add-Content -Path $logFilePath -Value $logMessage
+    Write-Host $logMessage
+}
+
+Write-Log "🚀 Starte WebSocket-Client..."
+
+function Connect-WebSocket {
+    while ($true) {
+        try {
+            $uri = New-Object System.Uri($serverUrl)
+            $websocket = New-Object System.Net.WebSockets.ClientWebSocket
+
+            Write-Log "🔄 Versuche Verbindung zum Server..."
+            $websocket.ConnectAsync($uri, [System.Threading.CancellationToken]::None).Wait()
+
+
+            Write-Log "✅ Erfolgreich verbunden!"
+
+            $response = Register-Client -websocket $websocket
+
+            if ($response -eq "registered") {
+                Write-Log "📩 Client erfolgreich registriert!"
+                Listen-WebSocket -websocket $websocket
+            } else {
+                Write-Log "❌ Registrierung fehlgeschlagen, warte 5 Sekunden..."
+                Start-Sleep -Seconds 5
+            }
+
+        } catch {
+            Write-Log "❌ Verbindung fehlgeschlagen. Neuer Versuch in 5 Sekunden... Fehler: $_"
+            Start-Sleep -Seconds 5
+        }
+    }
+}
+
+function Register-Client {
+    param ([System.Net.WebSockets.ClientWebSocket]$websocket)
+
+    $data = @{
+        action    = "register"
+        client_id = $clientId
+        hostname  = $computerName
+        ip        = $ipAddress
+    } | ConvertTo-Json -Compress
+
+    Write-Log "📤 Sende Registrierungsdaten: $data"
+    $buffer = [System.Text.Encoding]::UTF8.GetBytes($data)
+    $segment = New-Object System.ArraySegment[byte] -ArgumentList (, $buffer)
+
+    $websocket.SendAsync($segment, [System.Net.WebSockets.WebSocketMessageType]::Text, $true, [System.Threading.CancellationToken]::None).Wait()
+
+    $receiveBuffer = New-Object byte[] 8192
+    $segment = New-Object System.ArraySegment[byte] -ArgumentList (, $receiveBuffer)
+    $result = $websocket.ReceiveAsync($segment, [System.Threading.CancellationToken]::None).Result
+
+    if ($result.Count -eq 0) {
+        Write-Log "⚠️ Server hat eine leere Antwort gesendet!"
+        return "error"
+    }
+
+    $message = [System.Text.Encoding]::UTF8.GetString($receiveBuffer, 0, $result.Count)
+    Write-Log "📨 Server-Antwort: $message"
+
+    $responseData = $message | ConvertFrom-Json -ErrorAction Stop
+
+    if ($responseData.status -eq "registered") {
+        return "registered"
+    } else {
+        Write-Log "⚠️ Unerwartete Server-Antwort: $message"
+        return "error"
+    }
+}
+
+function Execute-Script {
+    param ([string]$scriptName, [string]$scriptContentBase64, [string]$scriptType)
+
+    Write-Log "📥 Empfangenes Skript: $scriptName (Typ: $scriptType)"
+
+    if ($scriptType -eq "powershell-base64") {
+        try {
+            $decodedBytes = [System.Convert]::FromBase64String($scriptContentBase64)
+            $scriptContent = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+
+            Write-Log "▶️ Führe base64-PowerShell-Skript direkt aus"
+            # Invoke-Expression -Command $scriptContent
+            $encodedScript = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($scriptContent))
+            Start-Process -FilePath "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -EncodedCommand $encodedScript" -NoNewWindow
+
+
+            Write-Log "✅ PowerShell-Skript erfolgreich ausgeführt"
+        } catch {
+            Write-Log "❌ Fehler beim Dekodieren und Ausführen: $_"
+        }
+    } else {
+        Write-Log "⚠️ Unbekannter Skripttyp: $scriptType"
+    }
+}
+
+
+function Process-IncomingChunk {
+    param ([hashtable]$data)
+
+    $scriptName = $data["script_name"]
+    $chunkIndex = $data["chunk_index"]
+    $totalChunks = $data["total_chunks"]
+    $scriptChunk = $data["script_chunk"]
+    $scriptType = $data["script_type"]  # 🆕 Neuer Parameter für Skripttyp
+
+    Write-Log "📥 Empfangenes Skript-Chunk $chunkIndex/$totalChunks für $scriptName (Typ: $scriptType)"
+
+    if (-not $scriptChunks.ContainsKey($scriptName)) {
+        $scriptChunks[$scriptName] = @{}
+        $scriptTotalChunks[$scriptName] = $totalChunks
+    }
+
+    $scriptChunks[$scriptName][$chunkIndex] = $scriptChunk
+    $receivedChunksCount = $scriptChunks[$scriptName].Count
+
+    Write-Log "🧐 Chunks für $scriptName - $receivedChunksCount / $totalChunks"
+
+    if ($receivedChunksCount -eq $totalChunks) {
+        Write-Log "✅ Alle Chunks für $scriptName empfangen. Setze Datei zusammen..."
+
+        $fullScriptBase64 = ""
+        for ($i = 0; $i -lt $totalChunks; $i++) {
+            if ($scriptChunks[$scriptName].ContainsKey($i)) {
+                $fullScriptBase64 += $scriptChunks[$scriptName][$i]
+            } else {
+                Write-Log "❌ Fehler: Chunk $i fehlt! Abbruch."
+                return
+            }
+        }
+
+        try {
+            # Skript dekodieren (Base64 → UTF-8)
+            $decodedBytes = [System.Convert]::FromBase64String($fullScriptBase64)
+            $scriptContent = [System.Text.Encoding]::UTF8.GetString($decodedBytes)
+
+            if ($scriptType -eq "powershell-base64") {
+                Write-Log "▶️ Direktes Ausführen des Base64-codierten PowerShell-Skripts im Speicher"
+
+                # Skript direkt in PowerShell übergeben und ausführen
+                $encodedScript = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($scriptContent))
+                Start-Process -FilePath "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -EncodedCommand $encodedScript" -NoNewWindow -Wait
+                Write-Log "✅ PowerShell-Base64-Skript ausgeführt"
+
+            } else {
+                # Datei speichern und ausführen
+                $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+                $safeScriptName = $scriptName -replace '[^\w\.-]', '_'
+                $tempFile = "$ScriptDir\$timestamp`_$safeScriptName"
+
+                if (-Not (Test-Path $ScriptDir)) {
+                    New-Item -ItemType Directory -Path $ScriptDir -Force | Out-Null
+                }
+
+                Write-Log "💾 Speichere vollständiges Skript in: $tempFile"
+                $scriptContent | Out-File -Encoding utf8 $tempFile
+
+                if (-Not (Test-Path $tempFile)) {
+                    Write-Log "❌ Fehler: Datei $tempFile wurde nicht gespeichert!"
+                    return
+                }
+
+                Write-Log "📄 Datei erfolgreich gespeichert: $tempFile"
+                Write-Log "▶️ Starte Skript: $tempFile"
+
+                # Passenden Interpreter wählen
+                switch ($scriptType) {
+                    "powershell" {
+                        Start-Process -FilePath "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -File `"$tempFile`"" -NoNewWindow 
+                    }
+                    "bat" {
+                        Start-Process -FilePath "cmd.exe" -ArgumentList "/c `"$tempFile`"" -NoNewWindow 
+                    }
+                    "python" {
+                        Start-Process -FilePath "python" -ArgumentList "`"$tempFile`"" -NoNewWindow 
+                    }
+                    "linuxshell" {
+                        Start-Process -FilePath "bash" -ArgumentList "`"$tempFile`"" -NoNewWindow 
+                    }
+                    "text" {
+                        Write-Log "📄 Öffne Skript als Textdatei in Notepad: $tempFile"
+                        Start-Process -FilePath "notepad.exe" -ArgumentList "`"$tempFile`""
+                    }
+                    default {
+                        Write-Log "⚠️ Unbekannter Skripttyp: $scriptType. Standard: PowerShell"
+                        Start-Process -FilePath "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -File `"$tempFile`"" -NoNewWindow 
+                    }
+                }
+
+                Write-Log "✅ Skript erfolgreich ausgeführt: $scriptName"
+            }
+
+            # Speicher für das Skript leeren
+            $scriptChunks.Remove($scriptName)
+            $scriptTotalChunks.Remove($scriptName)
+
+        } catch {
+            Write-Log "❌ Fehler beim Dekodieren oder Speichern des Skripts: $_"
+        }
+    }
+}
+
+
+
+function Listen-WebSocket {
+    param ([System.Net.WebSockets.ClientWebSocket]$websocket)
+
+    while ($true) {
+        if ($websocket -eq $null -or $websocket.State -ne "Open") {
+            Write-Log "⚠️ Verbindung verloren. Versuche eine neue Verbindung..."
+            Start-Sleep -Seconds 5
+            $websocket.Dispose()
+            $websocket = Connect-WebSocket
+            continue
+        }
+
+        try {
+            Write-Log "⏳ Warte auf Nachricht..."
+            $receiveBuffer = New-Object byte[] 8192
+            $segment = New-Object System.ArraySegment[byte] -ArgumentList (, $receiveBuffer)
+            $result = $websocket.ReceiveAsync($segment, [System.Threading.CancellationToken]::None).Result
+
+            if ($result.MessageType -eq "Close") {
+                Write-Log "⚠️ Verbindung vom Server geschlossen."
+                Start-Sleep -Seconds 5
+
+                # WebSocket-Client starten
+        $websocket = Connect-WebSocket -serverUrl $serverUrl
+
+                continue
+            }
+
+            # Nachricht dekodieren
+            $message = [System.Text.Encoding]::UTF8.GetString($receiveBuffer, 0, $result.Count)
+            Write-Log "📨 Nachricht erhalten: $message"
+
+            # JSON-Parsing mit Fehlerbehandlung
+            try {
+                $data = $message | ConvertFrom-Json -ErrorAction Stop
+            } catch {
+                Write-Log "⚠️ Ungültige JSON-Nachricht: $message"
+                $data = $null
+            }
+
+            # Falls die Nachricht JSON enthält, prüfen wir die "action"
+            if ($data -ne $null -and $data.PSObject.Properties["action"]) {
+                switch ($data.action) {
+                    "message" {
+                        if ($data.content -eq "STOP") {
+                            Write-Log "🛑 STOP-Nachricht erhalten. Beende das Skript..."
+                            $websocket.CloseAsync([System.Net.WebSockets.WebSocketCloseStatus]::NormalClosure, "STOP received", [System.Threading.CancellationToken]::None).Wait()
+
+                            if ($psISE) {
+                                Write-Log "⚠️ Skript läuft in PowerShell ISE. Schließe das ISE-Fenster nicht automatisch."
+                                exit
+                            } else {
+                                Write-Log "💨 Skript wird jetzt geschlossen..."
+                                Stop-Process -Id $PID  # Beendet das PowerShell-Fenster
+                            }
+                        } else {
+                            Write-Log "📩 Nachricht vom Server: $($data.content)"
+                            Start-Process -FilePath "msg.exe" -ArgumentList "* $($data.content)"
+                        }
+                    }
+                    "upload_script_chunk" {
+                        $hashtableData = @{}
+                        $data.PSObject.Properties | ForEach-Object { $hashtableData[$_.Name] = $_.Value }
+                        Process-IncomingChunk -data $hashtableData
+                    }
+                    default {
+                        Write-Log "⚠️ Unbekannte Aktion: $($data.action)"
+                    }
+                }
+            } else {
+                Write-Log "⚠️ Nachricht kein gültiges JSON oder kein 'action'-Feld: $message"
+            }
+
+        } catch {
+            Write-Log "❌ Fehler beim Empfangen der Nachricht: $_"
+        }
+    }
+}
+
+
+# WebSocket-Client starten
+$websocket = Connect-WebSocket -serverUrl $serverUrl
+Listen-WebSocket -websocket $websocket</code></pre>
+</blockquote>
+<h2 class="atx" id="🔹-option-1-powershell-als-windows-dienst-installieren-empfohlen">🔹 Option 1: PowerShell als Windows-Dienst installieren (Empfohlen)</h2>
+<p>Da dein Skript dauerhaft im Hintergrund laufen soll, eignet sich ein Windows-Dienst.</p>
+<h3 class="atx" id="📌-schritte-zur-installation-als-windows-dienst"><strong>📌 Schritte zur Installation als Windows-Dienst:</strong></h3>
+<ol>
+<li><strong>Speichere dein Skript</strong> unter <code>C:\Program Files\MyService\client_script.ps1</code></li>
+<li><strong>Erstelle ein Dienst-Wrapper-Skript</strong> (<code>install_service.ps1</code>):</li>
+</ol>
+<pre><code class="fenced-code-block language-powershell"><span class="token variable">$serviceName</span> = <span class="token string">"WebSocketClientService"</span>
+<span class="token variable">$serviceExePath</span> = <span class="token string">"C:\Program Files\MyService\client_script.ps1"</span>
+
+<span class="token comment"># Prüfen, ob Dienst existiert</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">Get-Service</span> <span class="token operator">-</span>Name <span class="token variable">$serviceName</span> <span class="token operator">-</span>ErrorAction SilentlyContinue<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">Write-Host</span> <span class="token string">"⚠️ Dienst existiert bereits! Stoppe und lösche ihn..."</span>
+    <span class="token function">Stop-Service</span> <span class="token operator">-</span>Name <span class="token variable">$serviceName</span> <span class="token operator">-</span>Force
+    <span class="token function">sc</span><span class="token punctuation">.</span>exe delete <span class="token variable">$serviceName</span>
+    <span class="token function">Start-Sleep</span> <span class="token operator">-</span>Seconds 3
+<span class="token punctuation">}</span>
+
+<span class="token function">Write-Host</span> <span class="token string">"📌 Erstelle neuen Dienst: <span class="token variable">$serviceName</span>"</span>
+<span class="token function">New-Service</span> <span class="token operator">-</span>Name <span class="token variable">$serviceName</span> <span class="token operator">-</span>BinaryPathName <span class="token string">"powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -File <span class="token variable">$serviceExePath</span>"</span> <span class="token operator">-</span>DisplayName <span class="token string">"WebSocket Client Service"</span> <span class="token operator">-</span>Description <span class="token string">"Dieser Dienst hält die WebSocket-Verbindung zum Server aufrecht."</span> <span class="token operator">-</span>StartupType Automatic
+
+<span class="token function">Write-Host</span> <span class="token string">"✅ Dienst erfolgreich erstellt!"</span></code></pre>
+<ol start="3">
+<li><p><strong>Dienst installieren &amp; starten:</strong></p>
+<pre><code class="fenced-code-block language-powershell">powershell <span class="token operator">-</span>ExecutionPolicy Bypass <span class="token operator">-</span>File <span class="token string">"C:\Program Files\MyService\install_service.ps1"</span>
+<span class="token function">Start-Service</span> <span class="token operator">-</span>Name WebSocketClientService</code></pre>
+</li>
+<li><p><strong>Dienst prüfen:</strong></p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Get-Service</span> <span class="token operator">-</span>Name WebSocketClientService</code></pre>
+</li>
+<li><p><strong>Falls nötig, Dienst deinstallieren:</strong></p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Stop-Service</span> <span class="token operator">-</span>Name WebSocketClientService <span class="token operator">-</span>Force
+<span class="token function">sc</span><span class="token punctuation">.</span>exe delete WebSocketClientService</code></pre>
+</li>
+</ol>
+<hr>
+<h2 class="atx" id="🔹-option-2-powershell-zu-einer-exe-umwandeln"><strong>🔹 Option 2: PowerShell zu einer <code>.exe</code> umwandeln</strong></h2>
+<p>Falls du es lieber als <code>client_script.exe</code> haben möchtest, kannst du es mit einem <strong>Compiler</strong> in eine <code>.exe</code> umwandeln.</p>
+<h3 class="atx" id="📌-schritte-mit-ps2exe"><strong>📌 Schritte mit PS2EXE</strong></h3>
+<ol>
+<li><p><strong>Installiere <code>PS2EXE</code></strong></p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Install-Module</span> ps2exe <span class="token operator">-</span>Scope CurrentUser</code></pre>
+</li>
+<li><p><strong>Kompiliere dein Skript zur <code>.exe</code></strong></p>
+<pre><code class="fenced-code-block language-powershell">ps2exe <span class="token string">"C:\Program Files\MyService\client_script.ps1"</span> <span class="token string">"C:\Program Files\MyService\client_script.exe"</span> <span class="token operator">-</span>noConsole <span class="token operator">-</span>icon <span class="token string">"C:\Path\To\Icon.ico"</span></code></pre>
+</li>
+<li><p><strong>Starte die <code>.exe</code></strong></p>
+<pre><code class="fenced-code-block language-powershell"><span class="token function">Start-Process</span> <span class="token operator">-</span>FilePath <span class="token string">"C:\Program Files\MyService\client_script.exe"</span></code></pre>
+</li>
+<li><p><strong>Falls du Logs möchtest, kannst du sie in eine Datei umleiten:</strong></p>
+<pre><code class="fenced-code-block language-powershell">ps2exe <span class="token string">"C:\Program Files\MyService\client_script.ps1"</span> <span class="token string">"C:\Program Files\MyService\client_script.exe"</span> <span class="token operator">-</span>noConsole <span class="token operator">-</span>icon <span class="token string">"C:\Path\To\Icon.ico"</span> <span class="token operator">-</span>OutputEncoding UTF8</code></pre>
+</li>
+</ol>
+<hr>
+<h2 class="atx" id="🔹-welche-methode-ist-besser"><strong>🔹 Welche Methode ist besser?</strong></h2>
+<table>
+<thead>
+<tr>
+<th>Methode</th>
+<th>Vorteile</th>
+<th>Nachteile</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Windows-Dienst</strong></td>
+<td>✅ Läuft im Hintergrund ohne GUI✅ Startet automatisch mit Windows✅ Kein extra Compiler nötig</td>
+<td>❌ Muss als Administrator installiert werden</td>
+</tr>
+<tr>
+<td><strong>EXE-Datei (PS2EXE)</strong></td>
+<td>✅ Kann leicht verteilt werden✅ Keine Installation nötig</td>
+<td>❌ Muss manuell gestartet werden❌ Keine automatische Wiederverbindung nach Neustart</td>
+</tr>
+</tbody></table>
+<h1 class="atx" id="linux">Linux</h1>
+<h2 class="atx" id="🔹-linux-client-script-powershell">🔹 Linux Client Script: PowerShell</h2>
+<pre><code class="fenced-code-block language-Python">import asyncio
+import websockets
+import json
+import os
+import socket
+import uuid
+import base64
+import subprocess
+
+# 🌍 WebSocket-Server URL
+SERVER_URL = "ws://85.215.147.108:8765"
+
+# 📡 Client-Identifikationsdaten
+CLIENT_ID = str(uuid.uuid4())
+COMPUTER_NAME = socket.gethostname()
+IP_ADDRESS = socket.gethostbyname(socket.gethostname())
+
+# 📁 Speicherort für Skripte und Logs
+SCRIPT_DIR = "/tmp/scriptfiles"
+LOG_FILE = "/tmp/client_stream.log"
+
+# 🔄 Skript-Chunks speichern
+script_chunks = {}
+script_total_chunks = {}
+script_types = {}
+
+# 📁 Sicherstellen, dass das Skriptverzeichnis existiert
+os.makedirs(SCRIPT_DIR, exist_ok=True)
+
+
+# 📝 Logging-Funktion
+def log_message(message):
+    timestamp = asyncio.get_event_loop().time()
+    log_entry = f"{timestamp:.2f} - {message}"
+    print(log_entry)
+    with open(LOG_FILE, "a") as log_file:
+        log_file.write(log_entry + "\n")
+
+
+# 🛠 Funktion zur `dos2unix`-Konvertierung
+def convert_to_unix(script_path):
+    try:
+        result = subprocess.run(["dos2unix", script_path], check=True, capture_output=True, text=True)
+        log_message(f"🔄 `dos2unix` erfolgreich ausgeführt für: {script_path}")
+    except FileNotFoundError:
+        log_message("⚠️ `dos2unix` ist nicht installiert! Installiere es mit `sudo apt install dos2unix`.")
+    except subprocess.CalledProcessError as e:
+        log_message(f"❌ Fehler bei `dos2unix`: {e.stderr}")
+
+
+# 🔄 Funktion zur Skriptausführung
+def execute_script(script_name, script_content_base64, script_type):
+    script_dir = SCRIPT_DIR
+    os.makedirs(script_dir, exist_ok=True)  # Sicherstellen, dass das Verzeichnis existiert
+
+    # 🔽 Base64-Dekodierung
+    try:
+        script_content = base64.b64decode(script_content_base64).decode("utf-8")
+    except Exception as e:
+        log_message(f"❌ Fehler beim Dekodieren des Skripts: {e}")
+        return
+
+    # 🔽 Korrekte Speicherung des Skripts
+    safe_script_name = script_name.replace("/", "_")  # Sonderzeichen entfernen
+    script_path = os.path.join(script_dir, safe_script_name)
+
+    try:
+        with open(script_path, "w") as file:
+            file.write(script_content)
+
+        os.chmod(script_path, 0o755)  # Datei ausführbar machen
+        log_message(f"💾 Skript gespeichert: {script_path}")
+
+        # 🔄 `dos2unix` ausführen (Windows-Zeilenumbrüche entfernen)
+        convert_to_unix(script_path)
+
+        # 🔽 Skript basierend auf dem Typ ausführen
+        if script_type == "linuxshell":
+            subprocess.run(["/bin/bash", script_path], check=True)
+        elif script_type == "python":
+            subprocess.run(["python3", script_path], check=True)
+        elif script_type == "text":
+            print(open(script_path).read())
+        else:
+            log_message(f"⚠️ Unbekannter Skripttyp: {script_type}")
+
+        log_message(f"✅ Skript erfolgreich ausgeführt: {script_name}")
+
+    except Exception as e:
+        log_message(f"❌ Fehler beim Speichern oder Ausführen des Skripts: {e}")
+
+
+# 📡 Client am WebSocket-Server registrieren
+async def register_client(websocket):
+    data = {
+        "action": "register",
+        "client_id": CLIENT_ID,
+        "hostname": COMPUTER_NAME,
+        "ip": IP_ADDRESS
+    }
+    await websocket.send(json.dumps(data))
+    log_message(f"📤 Sende Registrierungsdaten: {data}")
+
+
+# 🔄 Chunks verarbeiten
+def process_chunk(script_name, chunk_index, total_chunks, script_chunk, script_type):
+    global script_chunks, script_total_chunks, script_types  # Verwenden der globalen Variablen
+
+    log_message(f"📥 Chunk {chunk_index}/{total_chunks} für {script_name} erhalten")
+
+    # Stelle sicher, dass script_chunks[script_name] als Dictionary existiert
+    if script_name not in script_chunks:
+        script_chunks[script_name] = {}
+        script_total_chunks[script_name] = total_chunks
+        script_types[script_name] = script_type  # Speichert den Typ für spätere Verarbeitung
+
+    script_chunks[script_name][chunk_index] = script_chunk  # Chunk abspeichern
+
+    # Prüfen, ob alle Chunks vorhanden sind
+    received_chunks = len(script_chunks[script_name])
+    log_message(f"🔄 Chunks empfangen: {received_chunks} / {total_chunks}")
+
+    if received_chunks == total_chunks:
+        log_message(f"✅ Alle Chunks für {script_name} empfangen. Setze Datei zusammen...")
+
+        # Chunks in der richtigen Reihenfolge zusammensetzen
+        sorted_chunks = [script_chunks[script_name][i] for i in range(total_chunks)]
+        full_script_base64 = "".join(sorted_chunks)
+
+        # Führe das Skript aus
+        execute_script(script_name, full_script_base64, script_types[script_name])
+
+        # Speicher bereinigen
+        del script_chunks[script_name]
+        del script_total_chunks[script_name]
+        del script_types[script_name]
+
+
+# 🔄 WebSocket-Verbindung aufbauen &amp; Nachrichten verarbeiten
+async def connect_websocket():
+    while True:
+        try:
+            log_message("🔄 Versuche Verbindung zum Server...")
+            async with websockets.connect(SERVER_URL) as websocket:
+                log_message("✅ Erfolgreich verbunden!")
+                await register_client(websocket)
+
+                async for message in websocket:
+                    log_message(f"📨 Nachricht erhalten: {message}")
+
+                    # Prüfen, ob gültiges JSON
+                    try:
+                        data = json.loads(message)
+                    except json.JSONDecodeError:
+                        log_message("⚠️ Fehler beim JSON-Parsen, wird ignoriert.")
+                        continue
+
+                    action = data.get("action")
+
+                    if action == "register":
+                        await register_client(websocket)
+
+                    elif action == "upload_script_chunk":
+                        process_chunk(
+                            data.get("script_name"),
+                            data.get("chunk_index"),
+                            data.get("total_chunks"),
+                            data.get("script_chunk"),
+                            data.get("script_type")
+                        )
+
+                    elif action == "message":
+                        content = data.get("content")
+                        if content == "STOP":
+                            log_message("🛑 STOP-Befehl erhalten. Beende das Skript...")
+                            await websocket.close()
+                            os._exit(0)
+                        else:
+                            log_message(f"📩 Nachricht vom Server: {content}")
+
+                    else:
+                        log_message(f"⚠️ Unbekannte Aktion: {action}")
+
+        except Exception as e:
+            log_message(f"⚠️ Verbindung verloren: {e}. Neuer Versuch in 5 Sekunden...")
+            await asyncio.sleep(5)
+
+
+# 🔥 WebSocket starten
+if __name__ == "__main__":
+    asyncio.run(connect_websocket())</code></pre>
+<p>Starten des scripts</p>
+<pre><code class="fenced-code-block language-sh">python linux_client.py</code></pre>
+</article>
+</body>
+</html>

