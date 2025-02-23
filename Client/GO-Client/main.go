@@ -14,13 +14,18 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"strings"
+	"strconv"
+	"sort"
 	"syscall"
 	"time"
+	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/transform"
 
 	"github.com/gorilla/websocket"
 )
 
-const serverURL = "ws://85.215.147.108:8765"
+//const serverURL = "ws://85.215.147.108:8765"
 
 var (
 	baseDir      = filepath.Join(os.Getenv("PROGRAMDATA"), "ondeso", "workplace")
@@ -29,15 +34,21 @@ var (
 	clientCfg    = filepath.Join(baseDir, "client_config.ini")
 	logFilePath  = filepath.Join(logDir, "client_stream.log")
 	clientID     string
+	loggingLevel = "normal" // Default: normal
+	oldLogFiles  = 10        // Default: 10 Logfiles
 	wsConn       *websocket.Conn
 	scriptChunks = make(map[string]map[int]string)
 	scriptTotal  = make(map[string]int)
 	exitChan     = make(chan bool)
+	serverURL    = "ws://85.215.147.108:8765"
+	HideScriptWindow bool
 )
 
 // Initialisiert Logs, Verzeichnisse und Client-ID
 func init() {
 	createDirs()
+	readConfig()
+	cleanupOldLogs()
 	clientID = getClientID()
 	setupLogging()
 }
@@ -52,14 +63,72 @@ func createDirs() {
 	}
 }
 
-// Setzt Logging in Datei
+
+// Liest Konfiguration aus client_config.ini
+func readConfig() {
+	if data, err := ioutil.ReadFile(clientCfg); err == nil {
+		lines := bytes.Split(data, []byte("\n"))
+		for _, line := range lines {
+			lineStr := strings.TrimSpace(string(line))
+			if strings.HasPrefix(lineStr, "logging=") {
+				loggingLevel = strings.TrimSpace(strings.Split(lineStr, "=")[1])
+			}
+			if strings.HasPrefix(lineStr, "websockserver=") {
+				serverURL = strings.TrimSpace(strings.Split(lineStr, "=")[1])
+			}
+			if strings.HasPrefix(lineStr, "HideScriptWindow=") {
+				val := strings.TrimSpace(strings.Split(lineStr, "=")[1])
+				HideScriptWindow = val == "1" || strings.ToLower(val) == "true"
+			}			
+			if strings.HasPrefix(lineStr, "oldLogfiles=") {
+				val := strings.TrimSpace(strings.Split(lineStr, "=")[1])
+				if num, err := strconv.Atoi(val); err == nil && num > 0 {
+					oldLogFiles = num
+				}
+			}
+		}
+	}
+}
+
+// Setzt Logging
 func setupLogging() {
+	if loggingLevel == "off" {
+		log.SetOutput(ioutil.Discard)
+		return
+	}
+
 	file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("❌ Konnte Log-Datei nicht öffnen: %v", err)
 	}
 	log.SetOutput(file)
 }
+
+// Löscht alte Log-Dateien
+func cleanupOldLogs() {
+	files, err := ioutil.ReadDir(logDir)
+	if err != nil {
+		return
+	}
+
+	var logFiles []os.FileInfo
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), ".log") {
+			logFiles = append(logFiles, file)
+		}
+	}
+
+	sort.Slice(logFiles, func(i, j int) bool {
+		return logFiles[i].ModTime().After(logFiles[j].ModTime())
+	})
+
+	if len(logFiles) > oldLogFiles {
+		for _, file := range logFiles[oldLogFiles:] {
+			os.Remove(filepath.Join(logDir, file.Name()))
+		}
+	}
+}
+
 
 // Liest oder generiert eine Client-ID
 func getClientID() string {
@@ -233,6 +302,37 @@ func executeScript(scriptName string, chunks map[int]string, scriptType string) 
 	timestamp := time.Now().Format("20060102_150405")
 	filePath := filepath.Join(scriptDir, timestamp+"_"+scriptName)
 
+	// **PowerShell Base64 Direktverarbeitung**
+	if scriptType == "powershell-base64" {
+		writeLog("▶️ Direktes Ausführen des Base64-codierten PowerShell-Skripts im Speicher")
+
+		// **Konvertiere UTF-8 nach UTF-16LE**
+		utf16Encoder := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewEncoder()
+		utf16Script, _, err := transform.String(utf16Encoder, string(scriptContent))
+		if err != nil {
+			writeLog(fmt.Sprintf("❌ Fehler bei UTF-16LE-Konvertierung: %v", err))
+			return
+		}
+
+		// **Base64-Encodierung (UTF-16LE)**
+		encodedScript := base64.StdEncoding.EncodeToString([]byte(utf16Script))
+
+		// **PowerShell-Befehl erstellen**
+		cmd := exec.Command("powershell.exe", "-ExecutionPolicy", "Bypass", "-EncodedCommand", encodedScript)
+
+		// **Fenstersteuerung**
+		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: HideScriptWindow}
+
+		// **Skript starten**
+		err = cmd.Run()
+		if err != nil {
+			writeLog(fmt.Sprintf("❌ Fehler beim Starten des PowerShell-Skripts: %v", err))
+		} else {
+			writeLog("✅ PowerShell-Base64-Skript erfolgreich ausgeführt")
+		}
+		return
+	}
+
 	// **UTF-8 mit BOM speichern**
 	utf8BOM := []byte{0xEF, 0xBB, 0xBF}
 	contentWithBOM := append(utf8BOM, scriptContent...)
@@ -252,20 +352,37 @@ func executeScript(scriptName string, chunks map[int]string, scriptType string) 
 
 	switch scriptType {
 	case "powershell":
-		cmd = exec.Command("cmd.exe", "/c", "start", "powershell.exe", "-ExecutionPolicy", "Bypass", "-File", filePath, ">", outputLog, "2>&1", "&", "exit")
+		if HideScriptWindow {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/b", "powershell.exe", "-ExecutionPolicy", "Bypass", "-File", filePath, ">", outputLog, "2>&1", "&", "exit")
+		} else {
+			cmd = exec.Command("cmd.exe", "/c", "start", "powershell.exe", "-ExecutionPolicy", "Bypass", "-File", filePath, ">", outputLog, "2>&1", "&", "exit")
+
+		}
 	case "bat":
-		cmd = exec.Command("cmd.exe", "/c", "start", "/wait", filePath, ">", outputLog, "2>&1", "&", "exit")
+		if HideScriptWindow {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/b", "/wait", filePath, ">", outputLog, "2>&1", "&", "exit")
+		} else {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/wait", filePath, ">", outputLog, "2>&1", "&", "exit")
+		}
 	case "python":
-		cmd = exec.Command("cmd.exe", "/c", "start", "/wait", "python", filePath, ">", outputLog, "2>&1", "&", "exit")
+		if HideScriptWindow {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/b", "/wait", "python", filePath, ">", outputLog, "2>&1", "&", "exit")
+		} else {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/wait", "python", filePath, ">", outputLog, "2>&1", "&", "exit")
+		}
 	case "linuxshell":
-		cmd = exec.Command("cmd.exe", "/c", "start", "/wait", "bash", filePath, ">", outputLog, "2>&1", "&", "exit")
+		if HideScriptWindow {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/b", "/wait", "bash", filePath, ">", outputLog, "2>&1", "&", "exit")
+		} else {
+			cmd = exec.Command("cmd.exe", "/c", "start", "/wait", "bash", filePath, ">", outputLog, "2>&1", "&", "exit")
+		}
 	default:
 		writeLog(fmt.Sprintf("⚠️ Unbekannter Skripttyp: %s", scriptType))
 		return
 	}
 
 	// **Fenster bleibt sichtbar, schließt sich aber nach Skript-Ende**
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: false}
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: HideScriptWindow}
 
 	// **Startet das Skript in einem neuen Fenster, ohne die Haupt-Go-Konsole zu blockieren**
 	err = cmd.Start()

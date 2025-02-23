@@ -252,7 +252,7 @@ function Process-IncomingChunk {
 
                 Write-Log "✅ Skript erfolgreich ausgeführt: $scriptName"
             }
-
+        }
             # Speicher für das Skript leeren
             $scriptChunks.Remove($scriptName)
             $scriptTotalChunks.Remove($scriptName)
@@ -261,7 +261,7 @@ function Process-IncomingChunk {
             Write-Log "❌ Fehler beim Dekodieren oder Speichern des Skripts: $_"
         }
     }
-}
+
 
 
 
