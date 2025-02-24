@@ -1,0 +1,35 @@
+{
+    "MetaData": {
+        "ContentType": "db-import",
+        "Name": "Windows System Inventory",
+        "Description": "Collect System Information",
+        "Version": "1.0",
+        "Creator": "ondeso",
+        "Vendor": "ondeso GmbH",
+        "Preview": "",
+        "Schema": ""
+    },
+    "SystemInfo": {
+        "hostname": "MatinsSurfaceLS",
+        "uuid": "C49BB8D8-32DF-9F70-1931-A796700D852D",
+        "os": "Microsoft Windows 11 Enterprise",
+        "architecture": "",
+        "cpu": "11th Gen Intel(R) Core(TM) i7-11370H @ 3.30GHz",
+        "cores": 4,
+        "ram_total": "34185707520",
+        "disk_total": "",
+        "disk_free": "",
+        "ip_addresses": null,
+        "mac_addresses": null,
+        "bios_version": "",
+        "gpu": "",
+        "motherboard": "",
+        "serial_number": "",
+        "users": [
+            "Administrator",
+            "DefaultAccount",
+            "Gast",
+            "WDAGUtilityAccount"
+        ]
+    }
+}

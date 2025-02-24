@@ -1,0 +1,147 @@
+{
+    "MetaData": {
+        "ContentType": "db-import",
+        "Name": "Windows System Inventory",
+        "Description": "Collect System Information",
+        "Version": "1.0",
+        "Creator": "ondeso",
+        "Vendor": "ondeso GmbH",
+        "Preview": "",
+        "Schema": ""
+    },
+    "Content": {
+        "TableName": "usr_client_users",
+        "Consts": [
+            {
+                "Identifier": "CaptureDate",
+                "Value": "2025-02-23T08:28:35Z"
+            }
+        ],
+        "FieldMappings": [
+            {
+                "TargetField": "transaction_id",
+                "Expression": "{transaction_id}",
+                "IsIdentifier": true,
+                "ImportField": true
+            },
+            {
+                "TargetField": "asset_id",
+                "Expression": "{asset_id}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "username",
+                "Expression": "{username}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "client",
+                "Expression": "{client}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "usercount",
+                "Expression": "{usercount}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "permissions",
+                "Expression": "{permissions}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "sid",
+                "Expression": "{sid}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "full_name",
+                "Expression": "{full_name}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "account_status",
+                "Expression": "{account_status}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "last_logon",
+                "Expression": "{last_logon}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "description",
+                "Expression": "{description}",
+                "IsIdentifier": false,
+                "ImportField": true
+            }
+        ],
+        "Data": [
+            {
+                "id": "uuid-generated-here",
+                "transaction_id": "58ad96ce-2427-451e-af43-2fe2f5730cd8",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "username": "Administrator",
+                "client": "MatinsSurfaceLS",
+                "usercount": "1",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-500",
+                "full_name": "",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            },
+            {
+                "id": "uuid-generated-here",
+                "transaction_id": "58ad96ce-2427-451e-af43-2fe2f5730cd8",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "username": "DefaultAccount",
+                "client": "MatinsSurfaceLS",
+                "usercount": "2",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-503",
+                "full_name": "",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            },
+            {
+                "id": "uuid-generated-here",
+                "transaction_id": "58ad96ce-2427-451e-af43-2fe2f5730cd8",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "username": "Gast",
+                "client": "MatinsSurfaceLS",
+                "usercount": "3",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-501",
+                "full_name": "",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            },
+            {
+                "id": "uuid-generated-here",
+                "transaction_id": "58ad96ce-2427-451e-af43-2fe2f5730cd8",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "username": "WDAGUtilityAccount",
+                "client": "MatinsSurfaceLS",
+                "usercount": "4",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-504",
+                "full_name": "",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            }
+        ]
+    }
+}
