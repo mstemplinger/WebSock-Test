@@ -1,0 +1,143 @@
+{
+    "MetaData": {
+        "ContentType": "db-import",
+        "Name": "CSV Import",
+        "Description": "Dynamischer Import von CSV-Daten",
+        "Version": "1.0",
+        "Creator": "ondeso",
+        "Vendor": "ondeso GmbH",
+        "Preview": "",
+        "Schema": ""
+    },
+    "Content": {
+        "TableName": "test",
+        "Consts": [
+            {
+                "Identifier": "CaptureDate",
+                "Value": "2025-02-27T17:13:37+01:00"
+            }
+        ],
+        "FieldMappings": [
+            {
+                "TargetField": "transaction_id",
+                "Expression": "{transaction_id}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "asset_id",
+                "Expression": "{asset_id}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "username",
+                "Expression": "{username}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "client",
+                "Expression": "{client}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "usercount",
+                "Expression": "{usercount}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "permissions",
+                "Expression": "{permissions}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "sid",
+                "Expression": "{sid}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "full_name",
+                "Expression": "{full_name}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "account_status",
+                "Expression": "{account_status}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "last_logon",
+                "Expression": "{last_logon}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "description",
+                "Expression": "{description}",
+                "IsIdentifier": false,
+                "ImportField": true
+            }
+        ],
+        "Data": [
+            {
+                "account_status": "Active",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "client": "MATINSSURFACELS",
+                "description": "Vordefiniertes Konto für die Verwaltung des Computers bzw. der Domäne",
+                "full_name": "Vordefiniertes Konto für die Verwaltung des Computers bzw. der Domäne",
+                "last_logon": "2025-02-24 09:15:25",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-500",
+                "transaction_id": "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                "usercount": "4",
+                "username": "Administrator"
+            },
+            {
+                "account_status": "Disabled",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "client": "MATINSSURFACELS",
+                "description": "Ein vom System verwaltetes Benutzerkonto.",
+                "full_name": "Ein vom System verwaltetes Benutzerkonto.",
+                "last_logon": "2025-02-24 09:15:25",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-503",
+                "transaction_id": "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                "usercount": "4",
+                "username": "DefaultAccount"
+            },
+            {
+                "account_status": "Disabled",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "client": "MATINSSURFACELS",
+                "description": "Vordefiniertes Konto für Gastzugriff auf den Computer bzw. die Domäne",
+                "full_name": "Vordefiniertes Konto für Gastzugriff auf den Computer bzw. die Domäne",
+                "last_logon": "2025-02-24 09:15:25",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-501",
+                "transaction_id": "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                "usercount": "4",
+                "username": "Gast"
+            },
+            {
+                "account_status": "Disabled",
+                "asset_id": "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                "client": "MATINSSURFACELS",
+                "description": "Ein Benutzerkonto, das vom System für Windows Defender Application Guard-Szenarien verwaltet und verwendet wird",
+                "full_name": "Ein Benutzerkonto, das vom System für Windows Defender Application Guard-Szenarien verwaltet und verwendet wird",
+                "last_logon": "2025-02-24 09:15:25",
+                "permissions": "",
+                "sid": "S-1-5-21-275038908-3466648702-178965955-504",
+                "transaction_id": "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                "usercount": "4",
+                "username": "WDAGUtilityAccount"
+            }
+        ]
+    }
+}

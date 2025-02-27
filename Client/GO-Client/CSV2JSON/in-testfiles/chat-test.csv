@@ -1,0 +1,6 @@
+device_id,hostname,ip_address,location,os,installed_software,last_update,status
+d1a2b3c4,Server-01,192.168.1.10,Datacenter,Windows Server 2022,SQL Server;IIS;Docker,2025-02-26T12:30:00Z,Running
+e5f6g7h8,Laptop-12,10.0.0.45,Office,Windows 11,Office 365;Zoom;VS Code,2025-02-25T08:45:00Z,Idle
+i9j0k1l2,Workstation-03,172.16.5.20,Lab,Ubuntu 22.04,Docker;Kubernetes;Node.js,2025-02-24T18:10:00Z,Running
+m3n4o5p6,Firewall-01,192.168.0.1,Network,FortiOS 7.2,IPS;VPN;WebFilter,2025-02-20T23:59:00Z,Online
+q7r8s9t0,Router-05,192.168.0.254,Network,Cisco IOS XR,BGP;OSPF;Firewall,2025-02-23T15:30:00Z,Online
