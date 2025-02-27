@@ -7,4 +7,8 @@ require (
 	golang.org/x/text v0.22.0
 )
 
-require github.com/google/uuid v1.6.0 // indirect
+require (
+	fyne.io/fyne/v2 v2.5.4 // indirect
+	github.com/google/uuid v1.6.0 // indirect
+	gopkg.in/ini.v1 v1.67.0 // indirect
+)

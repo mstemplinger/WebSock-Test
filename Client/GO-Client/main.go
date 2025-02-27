@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -14,35 +14,44 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
-	"strings"
-	"strconv"
 	"sort"
+	"strconv"
+	"strings"
 	"syscall"
 	"time"
+
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 
 	"github.com/gorilla/websocket"
+	"gopkg.in/ini.v1"
 )
 
 //const serverURL = "ws://85.215.147.108:8765"
 
 var (
-	baseDir      = filepath.Join(os.Getenv("PROGRAMDATA"), "ondeso", "workplace")
-	logDir       = filepath.Join(baseDir, "logs")
-	scriptDir    = filepath.Join(baseDir, "scriptfiles")
-	clientCfg    = filepath.Join(baseDir, "client_config.ini")
-	logFilePath  = filepath.Join(logDir, "client_stream.log")
-	clientID     string
-	loggingLevel = "normal" // Default: normal
-	oldLogFiles  = 10        // Default: 10 Logfiles
-	wsConn       *websocket.Conn
-	scriptChunks = make(map[string]map[int]string)
-	scriptTotal  = make(map[string]int)
-	exitChan     = make(chan bool)
-	serverURL    = "ws://85.215.147.108:8765"
+	baseDir          = filepath.Join(os.Getenv("PROGRAMDATA"), "ondeso", "workplace")
+	logDir           = filepath.Join(baseDir, "logs")
+	scriptDir        = filepath.Join(baseDir, "scriptfiles")
+	clientCfg        = filepath.Join(baseDir, "client_config.ini")
+	logFilePath      = filepath.Join(logDir, "client_stream.log")
+	clientID         string
+	loggingLevel     = "normal" // Default: normal
+	oldLogFiles      = 10       // Default: 10 Logfiles
+	wsConn           *websocket.Conn
+	scriptChunks     = make(map[string]map[int]string)
+	scriptTotal      = make(map[string]int)
+	exitChan         = make(chan bool)
+	serverURL        = "ws://85.215.147.108:8765"
 	HideScriptWindow bool
 )
+
+var defaultConfig = map[string]string{
+	"logging":          "normal",
+	"oldLogfiles":      "10",
+	"websockserver":    "ws://85.215.147.108:8765",
+	"HideScriptWindow": "1",
+}
 
 // Initialisiert Logs, Verzeichnisse und Client-ID
 func init() {
@@ -50,7 +59,31 @@ func init() {
 	readConfig()
 	cleanupOldLogs()
 	clientID = getClientID()
+	createDefaultIniValues()
 	setupLogging()
+}
+
+func createDefaultIniValues() {
+	cfg, err := ini.Load(clientCfg)
+	if err != nil {
+		log.Printf("⚠️  Keine INI-Datei gefunden, erstelle neue Datei...")
+		cfg = ini.Empty()
+	}
+
+	section := cfg.Section("CLIENT")
+
+	for key, defaultValue := range defaultConfig {
+		if !section.HasKey(key) {
+			section.Key(key).SetValue(defaultValue)
+		}
+	}
+
+	err = cfg.SaveTo(clientCfg)
+	if err != nil {
+		log.Fatalf("❌ Fehler beim Speichern der INI-Datei: %v", err)
+	}
+
+	fmt.Println("✅ INI-Datei erfolgreich aktualisiert!")
 }
 
 // Erstellt Verzeichnisse für Logs und Skripte
@@ -63,10 +96,9 @@ func createDirs() {
 	}
 }
 
-
 // Liest Konfiguration aus client_config.ini
 func readConfig() {
-	if data, err := ioutil.ReadFile(clientCfg); err == nil {
+	if data, err := os.ReadFile(clientCfg); err == nil {
 		lines := bytes.Split(data, []byte("\n"))
 		for _, line := range lines {
 			lineStr := strings.TrimSpace(string(line))
@@ -79,7 +111,7 @@ func readConfig() {
 			if strings.HasPrefix(lineStr, "HideScriptWindow=") {
 				val := strings.TrimSpace(strings.Split(lineStr, "=")[1])
 				HideScriptWindow = val == "1" || strings.ToLower(val) == "true"
-			}			
+			}
 			if strings.HasPrefix(lineStr, "oldLogfiles=") {
 				val := strings.TrimSpace(strings.Split(lineStr, "=")[1])
 				if num, err := strconv.Atoi(val); err == nil && num > 0 {
@@ -93,7 +125,7 @@ func readConfig() {
 // Setzt Logging
 func setupLogging() {
 	if loggingLevel == "off" {
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 		return
 	}
 
@@ -106,12 +138,12 @@ func setupLogging() {
 
 // Löscht alte Log-Dateien
 func cleanupOldLogs() {
-	files, err := ioutil.ReadDir(logDir)
+	files, err := os.ReadDir(logDir)
 	if err != nil {
 		return
 	}
 
-	var logFiles []os.FileInfo
+	var logFiles []os.DirEntry
 	for _, file := range files {
 		if strings.HasSuffix(file.Name(), ".log") {
 			logFiles = append(logFiles, file)
@@ -119,7 +151,9 @@ func cleanupOldLogs() {
 	}
 
 	sort.Slice(logFiles, func(i, j int) bool {
-		return logFiles[i].ModTime().After(logFiles[j].ModTime())
+		infoI, _ := logFiles[i].Info()
+		infoJ, _ := logFiles[j].Info()
+		return infoI.ModTime().After(infoJ.ModTime())
 	})
 
 	if len(logFiles) > oldLogFiles {
@@ -129,24 +163,30 @@ func cleanupOldLogs() {
 	}
 }
 
-
-// Liest oder generiert eine Client-ID
+// Holt oder generiert eine Client-ID und speichert sie in der INI-Datei
 func getClientID() string {
-	if data, err := ioutil.ReadFile(clientCfg); err == nil {
-		lines := bytes.Split(data, []byte("\n"))
-		for _, line := range lines {
-			if bytes.HasPrefix(line, []byte("client_id=")) {
-				clientID := string(bytes.TrimSpace(bytes.TrimPrefix(line, []byte("client_id="))))
-				writeLog("🔄 Verwende gespeicherte Client-ID: " + clientID)
-				return clientID
-			}
-		}
+	cfg, err := ini.Load(clientCfg)
+	if err != nil {
+		writeLog("⚠️ Keine INI-Datei gefunden, erstelle neue Datei...")
+		cfg = ini.Empty()
 	}
 
-	newID := generateGUID()
-	ioutil.WriteFile(clientCfg, []byte("[CLIENT]\nclient_id="+newID), 0644)
-	writeLog("🆕 Neue Client-ID generiert: " + newID)
-	return newID
+	section := cfg.Section("CLIENT")
+	clientID := section.Key("client_id").String()
+
+	if clientID == "" {
+		clientID = generateGUID()
+		section.Key("client_id").SetValue(clientID)
+		err = cfg.SaveTo(clientCfg)
+		if err != nil {
+			writeLog("❌ Fehler beim Speichern der INI-Datei: " + err.Error())
+		}
+		writeLog("🆕 Neue Client-ID generiert: " + clientID)
+	} else {
+		writeLog("🔄 Verwende gespeicherte Client-ID: " + clientID)
+	}
+
+	return clientID
 }
 
 // Erstellt eine GUID
@@ -337,7 +377,7 @@ func executeScript(scriptName string, chunks map[int]string, scriptType string) 
 	utf8BOM := []byte{0xEF, 0xBB, 0xBF}
 	contentWithBOM := append(utf8BOM, scriptContent...)
 
-	err := ioutil.WriteFile(filePath, contentWithBOM, 0755)
+	err := os.WriteFile(filePath, contentWithBOM, 0755)
 	if err != nil {
 		writeLog(fmt.Sprintf("❌ Fehler beim Speichern des Skripts: %v", err))
 		return

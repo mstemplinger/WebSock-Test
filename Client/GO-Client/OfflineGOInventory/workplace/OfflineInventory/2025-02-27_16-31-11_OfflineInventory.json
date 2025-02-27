@@ -1,0 +1,147 @@
+{
+    "MetaData": {
+        "ContentType": "db-import",
+        "Name": "Windows User Import",
+        "Description": "Collect User Information",
+        "Version": "1.0",
+        "Creator": "ondeso",
+        "Vendor": "ondeso GmbH",
+        "Preview": "",
+        "Schema": ""
+    },
+    "Content": {
+        "TableName": "usr_client_users",
+        "Consts": [
+            {
+                "Identifier": "CaptureDate",
+                "Value": "2025-02-27T15:31:11Z"
+            }
+        ],
+        "FieldMappings": [
+            {
+                "TargetField": "transaction_id",
+                "Expression": "{transaction_id}",
+                "IsIdentifier": true,
+                "ImportField": true
+            },
+            {
+                "TargetField": "asset_id",
+                "Expression": "{asset_id}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "username",
+                "Expression": "{username}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "client",
+                "Expression": "{client}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "usercount",
+                "Expression": "{usercount}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "permissions",
+                "Expression": "{permissions}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "sid",
+                "Expression": "{sid}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "full_name",
+                "Expression": "{full_name}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "account_status",
+                "Expression": "{account_status}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "last_logon",
+                "Expression": "{last_logon}",
+                "IsIdentifier": false,
+                "ImportField": true
+            },
+            {
+                "TargetField": "description",
+                "Expression": "{description}",
+                "IsIdentifier": false,
+                "ImportField": true
+            }
+        ],
+        "Data": [
+            {
+                "id": "bd8397ff-0d52-49ce-9ddd-f8873192846f",
+                "transaction_id": "62dc86e3-9bca-4095-8854-1922138a4bc2",
+                "asset_id": "C49BB8D8-32DF-9F70-1931-A796700D852D",
+                "username": "Vordefiniertes",
+                "client": "MatinsSurfaceLS",
+                "usercount": "1",
+                "permissions": "",
+                "sid": "Konto",
+                "full_name": "f\ufffdr die Verwaltung des Computers bzw. der Dom\ufffdne FALSE Administrator S-1-5-21-275038908-3466648702-178965955-500",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            },
+            {
+                "id": "347b665c-9d34-4a10-a230-2f202eb8e339",
+                "transaction_id": "62dc86e3-9bca-4095-8854-1922138a4bc2",
+                "asset_id": "C49BB8D8-32DF-9F70-1931-A796700D852D",
+                "username": "Ein",
+                "client": "MatinsSurfaceLS",
+                "usercount": "2",
+                "permissions": "",
+                "sid": "vom",
+                "full_name": "System verwaltetes Benutzerkonto. TRUE DefaultAccount S-1-5-21-275038908-3466648702-178965955-503",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            },
+            {
+                "id": "f8655578-6a6d-4455-ad3d-d9a5d828e6bb",
+                "transaction_id": "62dc86e3-9bca-4095-8854-1922138a4bc2",
+                "asset_id": "C49BB8D8-32DF-9F70-1931-A796700D852D",
+                "username": "Vordefiniertes",
+                "client": "MatinsSurfaceLS",
+                "usercount": "3",
+                "permissions": "",
+                "sid": "Konto",
+                "full_name": "f\ufffdr Gastzugriff auf den Computer bzw. die Dom\ufffdne TRUE Gast S-1-5-21-275038908-3466648702-178965955-501",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            },
+            {
+                "id": "fc947813-5245-4c3c-a340-d960362273a6",
+                "transaction_id": "62dc86e3-9bca-4095-8854-1922138a4bc2",
+                "asset_id": "C49BB8D8-32DF-9F70-1931-A796700D852D",
+                "username": "Ein",
+                "client": "MatinsSurfaceLS",
+                "usercount": "4",
+                "permissions": "",
+                "sid": "Benutzerkonto,",
+                "full_name": "das vom System f\ufffdr Windows Defender Application Guard-Szenarien verwaltet und verwendet wird TRUE WDAGUtilityAccount S-1-5-21-275038908-3466648702-178965955-504",
+                "account_status": "Active",
+                "last_logon": "",
+                "description": ""
+            }
+        ]
+    }
+}

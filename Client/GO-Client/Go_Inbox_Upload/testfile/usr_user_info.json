@@ -1,0 +1,147 @@
+{
+    "MetaData":  {
+                     "ContentType":  "db-import",
+                     "Name":  "Windows User Import",
+                     "Description":  "Collect User Information",
+                     "Version":  "1.0",
+                     "Creator":  "ondeso",
+                     "Vendor":  "ondeso GmbH",
+                     "Preview":  "",
+                     "Schema":  ""
+                 },
+    "Content":  {
+                    "TableName":  "usr_client_users",
+                    "Consts":  [
+                                   {
+                                       "Identifier":  "CaptureDate",
+                                       "Value":  "2025-02-24T08:16:47Z"
+                                   }
+                               ],
+                    "FieldMappings":  [
+                                          {
+                                              "TargetField":  "transaction_id",
+                                              "Expression":  "{transaction_id}",
+                                              "IsIdentifier":  true,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "asset_id",
+                                              "Expression":  "{asset_id}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "username",
+                                              "Expression":  "{username}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "client",
+                                              "Expression":  "{client}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "usercount",
+                                              "Expression":  "{usercount}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "permissions",
+                                              "Expression":  "{permissions}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "sid",
+                                              "Expression":  "{sid}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "full_name",
+                                              "Expression":  "{full_name}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "account_status",
+                                              "Expression":  "{account_status}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "last_logon",
+                                              "Expression":  "{last_logon}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          },
+                                          {
+                                              "TargetField":  "description",
+                                              "Expression":  "{description}",
+                                              "IsIdentifier":  false,
+                                              "ImportField":  true
+                                          }
+                                      ],
+                    "Data":  [
+                                 {
+                                     "id":  "20768cbc-7a74-4e44-ac72-0e4de5c23776",
+                                     "transaction_id":  "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                                     "asset_id":  "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                                     "username":  "Administrator",
+                                     "client":  "MATINSSURFACELS",
+                                     "usercount":  "4",
+                                     "permissions":  "",
+                                     "sid":  "S-1-5-21-275038908-3466648702-178965955-500",
+                                     "full_name":  "Vordefiniertes Konto für die Verwaltung des Computers bzw. der Domäne",
+                                     "account_status":  "Active",
+                                     "last_logon":  "2025-02-24 09:15:25",
+                                     "description":  "Vordefiniertes Konto für die Verwaltung des Computers bzw. der Domäne"
+                                 },
+                                 {
+                                     "id":  "23a2d2ce-1ba6-44a7-bce8-25e4343b15be",
+                                     "transaction_id":  "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                                     "asset_id":  "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                                     "username":  "DefaultAccount",
+                                     "client":  "MATINSSURFACELS",
+                                     "usercount":  "4",
+                                     "permissions":  "",
+                                     "sid":  "S-1-5-21-275038908-3466648702-178965955-503",
+                                     "full_name":  "Ein vom System verwaltetes Benutzerkonto.",
+                                     "account_status":  "Disabled",
+                                     "last_logon":  "2025-02-24 09:15:25",
+                                     "description":  "Ein vom System verwaltetes Benutzerkonto."
+                                 },
+                                 {
+                                     "id":  "360dcac2-8313-4fa2-bf07-47d27ea67f9b",
+                                     "transaction_id":  "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                                     "asset_id":  "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                                     "username":  "Gast",
+                                     "client":  "MATINSSURFACELS",
+                                     "usercount":  "4",
+                                     "permissions":  "",
+                                     "sid":  "S-1-5-21-275038908-3466648702-178965955-501",
+                                     "full_name":  "Vordefiniertes Konto für Gastzugriff auf den Computer bzw. die Domäne",
+                                     "account_status":  "Disabled",
+                                     "last_logon":  "2025-02-24 09:15:25",
+                                     "description":  "Vordefiniertes Konto für Gastzugriff auf den Computer bzw. die Domäne"
+                                 },
+                                 {
+                                     "id":  "0a4556c7-a4db-482a-85f3-561b39243d20",
+                                     "transaction_id":  "a2d6d753-84e0-4a5f-8aa3-d322174bda61",
+                                     "asset_id":  "EFC0819A-5184-4422-99A8-80FEB75FA64B",
+                                     "username":  "WDAGUtilityAccount",
+                                     "client":  "MATINSSURFACELS",
+                                     "usercount":  "4",
+                                     "permissions":  "",
+                                     "sid":  "S-1-5-21-275038908-3466648702-178965955-504",
+                                     "full_name":  "Ein Benutzerkonto, das vom System für Windows Defender Application Guard-Szenarien verwaltet und verwendet wird",
+                                     "account_status":  "Disabled",
+                                     "last_logon":  "2025-02-24 09:15:25",
+                                     "description":  "Ein Benutzerkonto, das vom System für Windows Defender Application Guard-Szenarien verwaltet und verwendet wird"
+                                 }
+                             ]
+                }
+}

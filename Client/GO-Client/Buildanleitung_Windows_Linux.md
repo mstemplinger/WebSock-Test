@@ -119,8 +119,6 @@ Falls du der `.exe` ein **eigenes Icon** oder **Metadaten (Version, Copyright, e
 
 ### 🚀 **Jetzt kannst du dein Go-Programm als fertige `.exe` ausliefern – ohne weitere Abhängigkeiten!** 🎉
 
-
-
 ### ✅ **Linux: Eigenständige ausführbare Datei (`.bin`) mit Go erstellen**
 
 Für Linux funktioniert die Erstellung ähnlich wie für Windows. Hier sind die Schritte:
@@ -276,3 +274,155 @@ sudo rm /etc/systemd/system/mein-programm.service
 ---
 
 🚀 **Jetzt hast du eine eigenständige, leicht verteilbare `.bin` für Linux!** 🎉
+
+
+
+Da du eine **CLI-Anwendung ohne GUI** baust und sowohl ein **Icon** als auch **Versionsinformationen** sowie ein **Manifest** einbinden möchtest, schauen wir uns den Prozess genau an.
+
+---
+
+## **1. Dateistruktur prüfen**
+
+Stelle sicher, dass deine Dateien in folgendem Format vorliegen:
+
+```
+/mein-projekt
+  ├── main.go
+  ├── main.rc
+  ├── websock.ico
+  ├── main.manifest (optional, falls benötigt)
+  ├── rsrc.syso (wird generiert)
+```
+
+---
+
+## **2. Inhalt der `main.rc` Datei**
+
+Falls deine `main.rc` derzeit nicht funktioniert, überprüfe sie. Sie sollte so aussehen:
+
+```
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Meine Firma"
+            VALUE "FileDescription", "Mein CLI-Programm"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "main"
+            VALUE "LegalCopyright", "© 2024 Meine Firma"
+            VALUE "OriginalFilename", "main.exe"
+            VALUE "ProductName", "Mein CLI-Client"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END
+
+1 ICON "websock.ico"
+```
+
+> Falls du ein **Manifest** einfügen willst, füge folgende Zeile am Ende der `main.rc` hinzu:
+> 
+> ```
+> 1 RT_MANIFEST "main.manifest"
+> ```
+
+---
+
+## **3. Ressourcen in `rsrc.syso` konvertieren**
+
+### **Falls `rsrc` genutzt wird (funktioniert aber nicht mit `.rc` Dateien)**
+
+Falls du nur ein **Icon und ein Manifest** einbinden willst, kannst du diesen Befehl probieren:
+
+```sh
+rsrc -ico websock.ico -manifest main.manifest -o rsrc.syso
+```
+
+Das Problem hierbei ist, dass `rsrc` **keine Versionsinfos (aus `main.rc`) unterstützt**. Daher müssen wir `windres` verwenden.
+
+---
+
+### **Falls `windres` genutzt wird (empfohlen)**
+
+1. Stelle sicher, dass **`mingw-w64` installiert ist**.
+   
+   **Windows (Chocolatey):**
+   
+   ```sh
+   choco install mingw -y
+   ```
+   
+   **Linux:**
+   
+   ```sh
+   sudo apt install mingw-w64
+   ```
+
+2. **Kompiliere `main.rc` in `rsrc.syso`:**
+   
+   ```sh
+   windres main.rc -O coff -o rsrc.syso
+   ```
+
+---
+
+## **4. Build-Befehl für CLI-Anwendung**
+
+Baue dein Programm mit:
+
+```sh
+go build -ldflags "-s -w" -o main.exe
+```
+
+### **Erklärung der Flags:**
+
+- `-s`: Entfernt Symboltabellen (macht die `.exe` kleiner).
+- `-w`: Entfernt Debug-Informationen.
+
+Da deine Anwendung **keine GUI hat**, **darfst du `-H windowsgui` NICHT setzen**.
+
+Falls du das Icon in der `.exe` nach dem Kompilieren prüfen möchtest, nutze ein Tool wie:
+
+- **Resource Hacker** (Windows)
+- **exiftool main.exe** (Linux)
+
+---
+
+## **5. Testen, ob das Icon & die Infos eingebunden wurden**
+
+1. Rechtsklick auf `main.exe` → **Eigenschaften** → **Details**
+   - Siehst du die Versionsinfos?
+2. Falls das Icon nicht in der `.exe` erscheint, aber in `Resource Hacker` sichtbar ist:
+   - Windows zeigt Icons in der Konsole oft nicht an (da CLI-Programme kein Fenster haben).
+   - Teste die `.exe`, indem du sie auf einen anderen Computer kopierst oder ein **GUI-Programm mit dem gleichen Icon** erstellst.
+
+---
+
+### **Falls es weiterhin nicht klappt**
+
+1. Stelle sicher, dass `websock.ico` eine **echte `.ico` Datei ist** (verwende `IcoFX` oder einen Online-Konverter).
+
+2. Falls der `rsrc.syso` nicht korrekt eingebunden wird:
+   
+   ```sh
+   go clean
+   go build -ldflags "-s -w" -o main.exe
+   ```
+
+---
+
+### **Fazit**
+
+- `rsrc` **kann nur Icons & Manifest einbinden**, aber KEINE Versionsinfos.
+- `windres` ist die **empfohlene Lösung**, um **Icon, Manifest & Versionen** einzubinden.
+- Falls das Icon in der `.exe` nicht sichtbar ist, liegt das an der **CLI-Natur von Windows**.
+
+Falls es immer noch nicht funktioniert, poste bitte deine genaue Fehlermeldung oder deine aktuelle `main.rc`. 😊
