@@ -105,7 +105,7 @@ func getClientID() string {
 
 	section := cfg.Section("CLIENT")
 	clientID := section.Key("client_id").String()
-
+	writeLog("⚠️ Meine ClientID =" + clientID)
 	if clientID == "" {
 		clientID = generateGUID()
 		section.Key("client_id").SetValue(clientID)
