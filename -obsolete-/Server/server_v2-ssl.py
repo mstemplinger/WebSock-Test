@@ -109,6 +109,17 @@ def client_details(client_id):
     tables = get_tables()
     return render_template("client_details.html", client=client, tables=tables, client_id=client_id)
 
+@app.route("/get_tables", methods=["GET"])
+def get_tables_api():
+    """Liefert eine Liste aller Datenbanktabellen als JSON zurück."""
+    try:
+        db.Model.metadata.reflect(bind=db.engine)
+        tables = list(db.Model.metadata.tables.keys())
+        return jsonify(tables)
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
+        return jsonify({"error": f"Fehler beim Abrufen der Tabellen: {str(e)}"}), 500
+
 
 @app.route("/table/<table_name>")
 def table_data(table_name):

@@ -7,55 +7,111 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #495057;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            width: 100%;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
-    <div class="container mt-5">
-        <h2 class="mb-4">📡 Verbundene Clients</h2>
-        <table class="table table-bordered table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>Client-ID</th>
-                    <th>Hostname</th>
-                    <th>IP-Adresse</th>
-                    <th>Aktionen</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for client_id, client in clients.items() %}
-                <tr>
-                    <td>{{ client_id }}</td>
-                    <td>{{ client.hostname }}</td>
-                    <td>{{ client.ip }}</td>
-                    <td>
-                        <div class="input-group mb-2">
-                            <input type="text" class="form-control message-input" placeholder="Nachricht eingeben">
-                            <button class="btn btn-primary send-btn" data-client-id="{{ client_id }}">Senden</button>
-                            <button class="btn btn-danger stop-btn" data-client-id="{{ client_id }}">STOP</button>
-                        </div>
-                        <!-- Skript-Eingabefeld mit Dropdown -->
-						<!-- Skript Auswahl mit dynamischer Liste -->
-						<div class="input-group">
-							<select class="form-select script-dropdown">
-								<option value="">Bitte Skript auswählen...</option>
-							</select>
-							<select class="form-select script-type">
-								<option value="text">Text</option>
-								<option value="powershell">PowerShell</option>
-								<option value="powershell-base64">PowerShell (base64)</option>
-								<option value="bat">Batch</option>
-								<option value="python">Python</option>
-								<option value="linuxshell">Linux Shell</option>
-							</select>
-							<button class="btn btn-warning script-btn" data-client-id="{{ client_id }}">Skript senden</button>
-						</div>
-
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
+<div class="wrapper">
+    <nav class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="#" id="clients-link"><i class="fas fa-users"></i> Connected Clients</a></li>
+            <li><h4>Datenbanktabellen</h4></li>
+            <ul id="dbTables"></ul>
+        </ul>
+    </nav>
+    
+    <main class="content">
+        <div class="container mt-5" id="clients-section">
+            <h2>📡 Verbundene Clients</h2>
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Client-ID</th>
+                        <th>Hostname</th>
+                        <th>IP-Adresse</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client_id, client in clients.items() %}
+                    <tr>
+                        <td>{{ client_id }}</td>
+                        <td>{{ client.hostname }}</td>
+                        <td>{{ client.ip }}</td>
+                        <td>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control message-input" placeholder="Nachricht eingeben">
+                                <button class="btn btn-primary send-btn" data-client-id="{{ client_id }}">Senden</button>
+                                <button class="btn btn-danger stop-btn" data-client-id="{{ client_id }}">STOP</button>
+                            </div>
+                            <div class="input-group">
+                                <select class="form-select script-dropdown">
+                                    <option value="">Bitte Skript auswählen...</option>
+                                </select>
+                                <select class="form-select script-type">
+                                    <option value="text">Text</option>
+                                    <option value="powershell">PowerShell</option>
+                                    <option value="powershell-base64">PowerShell (base64)</option>
+                                    <option value="bat">Batch</option>
+                                    <option value="python">Python</option>
+                                    <option value="linuxshell">Linux Shell</option>
+                                </select>
+                                <button class="btn btn-warning script-btn" data-client-id="{{ client_id }}">Skript senden</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         <!-- Globaler Nachrichtenbereich -->
         <div class="mt-4 p-3 bg-white border rounded">
             <h4>📢 Nachricht an alle senden</h4>
@@ -98,11 +154,15 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>        
+		</div>
+		
+    </main>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script>
-        var socket = io();
+<script>
+    function loadDatabaseTables() {
+		var socket = io();
 
         socket.on("refresh", function() {
             console.log("🔄 Auto-Refresh ausgelöst.");
@@ -142,7 +202,7 @@
                     });
             });
 
-            // Skript an einzelnen Client senden
+            
 			// Skript an einzelnen Client senden
 			$(".script-btn").click(function() {
 				let clientId = $(this).data("client-id");
@@ -163,11 +223,40 @@
 					});
 			});
 
+			// Nachricht an alle Clients senden
+			$("#sendAllBtn").click(function() {
+				let message = $("#globalMessage").val().trim();
 
-            // Skript an alle Clients senden
-            // Skript an alle Clients senden
+				if (message === "") {
+					alert("⚠️ Bitte eine Nachricht eingeben!");
+					return;
+				}
+
+				$.post("/send_message_all", { message: message })
+					.done(function(response) {
+						alert("✅ Nachricht erfolgreich an alle Clients gesendet!");
+					})
+					.fail(function(xhr) {
+						console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+			// STOP an alle Clients senden
+			$("#stopAllBtn").click(function() {
+				$.post("/send_message_all", { message: "STOP" })
+					.done(function(response) {
+						alert("🛑 STOP-Nachricht erfolgreich an alle Clients gesendet!");
+					})
+					.fail(function(xhr) {
+						console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+			// Skript an alle Clients senden
 			$("#sendScriptAllBtn").click(function() {
-				let scriptName = $("#globalScriptDropdown").val(); // Dropdown statt Input
+				let scriptName = $("#globalScriptDropdown").val();
 				let scriptType = $("#globalScriptType").val();
 
 				if (!scriptName) {
@@ -180,11 +269,12 @@
 						alert("✅ Skript erfolgreich an alle gesendet!");
 					})
 					.fail(function(xhr) {
+						console.error("❌ Fehler beim Senden des Skripts:", xhr.responseText);
 						alert("❌ Fehler beim Senden: " + xhr.responseText);
 					});
 			});
+		});
 
-        });
 		
 		function loadScripts() {
 			$.get("/get_scripts", function(data) {
@@ -209,9 +299,34 @@
 		$(document).ready(function() {
 			loadScripts();
 		});
+	
+	
+        $.get("/get_tables", function(data) {
+			$("#dbTables").empty();
+			if (data.error) {
+				$("#dbTables").append('<li>⚠️ Fehler beim Laden der Tabellen!</li>');
+			} else {
+				data.forEach(table => {
+					$("#dbTables").append(`<li><a href="./table/${table}" ">${table}</a></li>`);
+				});
 
-
-    </script>
+				// Event Listener für Tabellen-Links hinzufügen
+				$(".table-link").click(function(event) {
+					event.preventDefault();
+					let tableName = $(this).data("table");
+					loadTableData(tableName);
+				});
+			}
+		}).fail(function(xhr) {
+			console.error("Fehler beim Abrufen der Tabellen:", xhr.responseText);
+			$("#dbTables").append('<li>⚠️ Fehler beim Laden!</li>');
+		});
+    }
+    
+    $(document).ready(function() {
+        loadDatabaseTables();
+    });
+</script>
 
 </body>
 </html>

@@ -8,35 +8,37 @@ import os
 import base64
 import socket
 import threading
+from datetime import datetime, timezone
+
+# Flask & Flask-Extensions
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+
+# SQLAlchemy & Datenbank-Modelle
 from config import Config
-from models import db, Inbox, Asset, Inbox, ClientUser, SystemInfo, WSUSScanResult, WSUSDownloadInfo
+from models import db, Inbox, Asset, ClientUser, SystemInfo, WSUSScanResult, WSUSDownloadInfo
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime, timezone
-from sqlalchemy import text, inspect, literal
-from sqlalchemy import String, NVARCHAR
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text, inspect, literal, String, NVARCHAR
+
+# WebSocket-Fehlermanagement
 from websockets.exceptions import ConnectionClosed
 
-
-SCRIPT_DIR = os.path.join(os.getcwd(), "scriptfile")
-
-app = Flask(__name__)
-app.config.from_object(Config)  # Lade Einstellungen aus der config.py
-db.init_app(app) 
-
-socketio = SocketIO(app, cors_allowed_origins="*")  # WebSocket für HTML-Refresh
-
-clients = {}
-previous_clients = {}  # ⏳ Speichert vorherige Clients, um Änderungen zu erkennen
-
+# 🔧 Konfiguration & globale Variablen
 SCRIPT_DIR = os.path.join(os.path.dirname(__file__), "scriptfile")  # 📂 Skriptverzeichnis
-
 CHUNK_SIZE = 4000  # Maximale Größe pro Chunk
 
-# Logging konfigurieren
+# 🔄 Clients verwalten
+clients = {}
+previous_clients = {}
+
+# 📌 Flask & SocketIO Setup
+app = Flask(__name__)
+app.config.from_object(Config)  # Lade Konfiguration aus `config.py`
+db.init_app(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# 🔍 **Logging-Konfiguration**
 logging.basicConfig(
     filename="server.log",
     level=logging.DEBUG,
@@ -49,55 +51,13 @@ console_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s
 console_handler.setFormatter(console_formatter)
 logging.getLogger().addHandler(console_handler)
 
-@app.route("/")
-def index():
-    """Zeigt die HTML-Webseite mit den verbundenen Clients an."""
-    logging.debug("📄 HTML-Seite mit aktuellen Clients geöffnet.")
-    print(f"Aktuelle Clients: {clients}")
-    return render_template("index.html", clients=clients)
+# --------------------------------------
+# 🌐 **Asnc Functions                 **
+# --------------------------------------
 
-
-@app.route("/client/<client_id>")
-def client_details(client_id):
-    """Zeigt die Details eines bestimmten Clients an."""
-    client = Asset.query.filter_by(client_id=client_id).first()  # 🔄 Asset statt Client
-
-    if not client:
-        logging.error(f"❌ Client nicht gefunden: {client_id}")
-        return "Client nicht gefunden", 404
-
-    tables = get_tables()
-    return render_template("client_details.html", client=client, tables=tables, client_id=client_id)
-
-
-@app.route("/table/<table_name>")
-def table_data(table_name):
-    """Zeigt alle Daten aus einer bestimmten Tabelle an."""
-    
-    # 🛠️ Prüfen, ob die Tabelle existiert
-    db.Model.metadata.reflect(bind=db.engine)
-    if table_name not in db.Model.metadata.tables:
-        logging.error(f"❌ Fehler: Tabelle `{table_name}` existiert nicht in der Datenbank!")
-        return f"Fehler: Tabelle `{table_name}` nicht gefunden!", 404
-
-    logging.info(f"📊 Lade alle Daten aus `{table_name}`")
-
-    try:
-        table = db.Model.metadata.tables[table_name]
-        query = table.select()  # 🔄 KEINE Filterung auf client_id oder asset_id
-
-        with db.engine.connect() as connection:
-            result = connection.execute(query).fetchall()
-
-        # 📌 Korrektur: Spaltennamen aus dem Table-Objekt holen
-        column_names = [column.name for column in table.columns]
-
-        return render_template("table_data.html", table_name=table_name, data=result, columns=column_names)
-
-    except Exception as e:
-        logging.error(f"❌ Fehler beim Abrufen der Daten für `{table_name}`: {str(e)}")
-        return f"Interner Serverfehler: {str(e)}", 500
-
+# --------------------------------------
+# 🌐 **Functions                      **
+# --------------------------------------
 
 def get_tables():
     """Gibt alle Tabellen in der Datenbank zurück."""
@@ -110,40 +70,6 @@ def get_tables():
     except Exception as e:
         logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
         return []
-
-
-
-@app.route("/inbox", methods=["POST"])
-def inbox():
-    """Empfängt JSON-Daten und speichert sie ungeprüft in die Inbox-Tabelle zur späteren Verarbeitung."""
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "❌ Leere Anfrage erhalten"}), 400
-
-        # ✅ JSON als Zeichenkette speichern
-        json_content = json.dumps(data, ensure_ascii=False)
-
-        # 📥 Neuen Inbox-Eintrag erstellen
-        new_entry = Inbox(
-            acx_inbox_name=data.get("MetaData", {}).get("Name", "Unbekannt"),
-            acx_inbox_description=data.get("MetaData", {}).get("Description", "Keine Beschreibung"),
-            acx_inbox_creator=data.get("MetaData", {}).get("Creator", "Unbekannt"),
-            acx_inbox_vendor=data.get("MetaData", {}).get("Vendor", "Unbekannt"),
-            acx_inbox_content_type=data.get("MetaData", {}).get("ContentType", "unknown"),
-            acx_inbox_content=json_content,  # Ungeprüftes JSON speichern
-        )
-
-        db.session.add(new_entry)
-        db.session.commit()
-
-        logging.info(f"✅ Neuer JSON-Eintrag gespeichert in Inbox-ID: {new_entry.acx_inbox_id}")
-        return jsonify({"message": "✅ Daten erfolgreich gespeichert", "InboxID": str(new_entry.acx_inbox_id)}), 201
-
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"❌ Fehler beim Speichern in Inbox: {str(e)}")
-        return jsonify({"error": "Interner Serverfehler", "details": str(e)}), 500
 
 
 def get_column_lengths(table_name):
@@ -310,117 +236,120 @@ def check_for_refresh():
         logging.info("🔄 Client-Liste geändert, Refresh gesendet.")
         print("🔄 Client-Liste geändert, Refresh gesendet.")
 
-async def handle_client(websocket):
-    """Verarbeitet eingehende WebSocket-Verbindungen von Clients mit erweitertem Logging"""
+
+# --------------------------------------
+# 🌐 **Flask-Routen für Web-Oberfläche**
+# --------------------------------------
+
+
+@app.route("/")
+def index():
+    """Zeigt die HTML-Webseite mit den verbundenen Clients an."""
+    logging.debug("📄 HTML-Seite mit aktuellen Clients geöffnet.")
+    print(f"Aktuelle Clients: {clients}")
+    return render_template("index.html", clients=clients)
+
+@app.route("/showdocu")
+def showclients():
+    """Zeigt die HTML-Webseite mit der Docu an."""
+    logging.debug("📄 HTML-Seite mit aktuellen Docu geöffnet.")
+    print(f"Aktuelle Docu: {clients}")
+    return render_template("ProjectDocu.html", clients=clients)
+
+@app.route("/page/<path:filename>")
+def load_page(filename):
+    """Lädt dynamische HTML-Seiten aus dem templates-Ordner und übergibt Variablen."""
     try:
-        client_ip = websocket.remote_address[0] if websocket.remote_address else "Unbekannt"
-        logging.info(f"🔌 Neuer Client verbunden von {client_ip}")
-
-        async for message in websocket:
-            try:
-                logging.info(f"📩 Eingehende Nachricht von {client_ip}: {message}")
-
-                data = json.loads(message)
-                action = data.get("action")
-
-                if action == "register":
-                    client_id = data.get("client_id")
-                    hostname = data.get("hostname")
-                    ip_address = data.get("ip")
-
-                    # **Datenvalidierung**
-                    if not client_id or not hostname or not ip_address:
-                        logging.warning(f"⚠️ Ungültige Registrierungsdaten von {client_ip}: {data}")
-                        await websocket.send(json.dumps({"status": "error", "message": "Invalid registration data"}))
-                        continue
-
-                    # **Client im lokalen Dictionary speichern**
-                    clients[client_id] = {"websocket": websocket, "hostname": hostname, "ip": ip_address}
-                    logging.info(f"📥 Neuer Client zwischengespeichert: {clients[client_id]}")
-
-                    # **✅ Datenbank-Operationen für `acx_asset`**
-                    with app.app_context():
-                        try:
-                            logging.info(f"🔎 Suche nach bestehendem Asset für Client {client_id}...")
-                            existing_asset = Asset.query.filter_by(client_id=client_id).first()
-
-                            if existing_asset:
-                                logging.info(f"🔄 Update bestehendes Asset: {existing_asset.client_id} (Last Seen: {existing_asset.last_seen})")
-                                existing_asset.last_seen = datetime.now()
-                            else:
-                                logging.info(f"🆕 Neues Asset wird erstellt für Client {client_id} ({hostname}, {ip_address})")
-                                new_asset = Asset(client_id=client_id, hostname=hostname, ip_address=ip_address)
-                                db.session.add(new_asset)
-
-                            db.session.commit()
-                            check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
-                            logging.info(f"✅ Client {client_id} erfolgreich registriert oder aktualisiert in `acx_asset`")
-
-                        except SQLAlchemyError as e:
-                            db.session.rollback()
-                            logging.error(f"❌ Datenbankfehler bei Registrierung von {client_id}: {str(e)}")
-                            await websocket.send(json.dumps({"status": "error", "message": f"Database error: {str(e)}"}))
-                            continue
-                        except Exception as e:
-                            db.session.rollback()
-                            logging.error(f"❌ Unerwarteter Fehler bei DB-Operation für {client_id}: {str(e)}")
-                            await websocket.send(json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"}))
-                            continue
-
-                    # **✅ Bestätigung an den Client senden**
-                    response = json.dumps({"status": "registered"})
-                    await websocket.send(response)
-                    check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
-                    logging.info(f"📤 Registrierungsbestätigung an {hostname} ({ip_address}) gesendet")
-
-                else:
-                    logging.warning(f"⚠️ Unbekannte Aktion von {client_ip}: {data}")
-                    check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
-                    await websocket.send(json.dumps({"status": "error", "message": "Unknown action"}))
-
-            except json.JSONDecodeError:
-                logging.error(f"🚨 Ungültiges JSON von {client_ip}: {message}")
-                await websocket.send(json.dumps({"status": "error", "message": "Invalid JSON"}))
-            except Exception as e:
-                logging.error(f"❌ Allgemeiner Fehler in der Nachricht von {client_ip}: {str(e)}")
-                await websocket.send(json.dumps({"status": "error", "message": f"Processing error: {str(e)}"}))
-
-    except websockets.exceptions.ConnectionClosed as e:
-        logging.info(f"❌ WebSocket-Verbindung mit {client_ip} geschlossen: {e}")
-
-    finally:
-        # **Client aus der DB entfernen, wenn Verbindung verloren geht**
-        with app.app_context():
-            disconnected_clients = [key for key, value in clients.items() if value["websocket"] == websocket]
-
-            for client_id in disconnected_clients:
-                try:
-                    logging.info(f"🚪 Entferne Client {client_id} aus Clientspeicher...")
-                    clients.pop(client_id, None)
-
-                    logging.info(f"🔎 Suche nach Asset {client_id} in `acx_asset` zur Löschung...")
-                    asset = Asset.query.filter_by(client_id=client_id).first()
-                    
-                    if asset:
-                        logging.info(f"🗑️ Lösche Asset {client_id} aus `acx_asset`")
-                        # db.session.delete(asset)
-                        # db.session.commit()
-                        logging.info(f"✅ Client {client_id} erfolgreich aus `acx_asset` entfernt.")
-                    else:
-                        logging.warning(f"⚠️ Kein Asset-Eintrag für {client_id} gefunden. Kein Löschvorgang durchgeführt.")
-
-                except SQLAlchemyError as e:
-                    db.session.rollback()
-                    logging.error(f"❌ Fehler beim Löschen von Client {client_id} aus `acx_asset`: {str(e)}")
-                except Exception as e:
-                    logging.error(f"❌ Allgemeiner Fehler beim Entfernen von Client {client_id}: {str(e)}")
-
-        check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
-        logging.info("🛑 Client-Entfernung abgeschlossen.")
+        if filename == "clients.html":
+            return render_template(filename, clients=clients)  # Clients übergeben
+        return render_template(filename)  # Standard-Fall
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Laden der Seite {filename}: {str(e)}")
+        return "Fehler beim Laden der Seite", 404
 
 
+@app.route("/client/<client_id>")
+def client_details(client_id):
+    """Zeigt die Details eines bestimmten Clients an."""
+    client = Asset.query.filter_by(client_id=client_id).first()  # 🔄 Asset statt Client
 
+    if not client:
+        logging.error(f"❌ Client nicht gefunden: {client_id}")
+        return "Client nicht gefunden", 404
 
+    tables = get_tables()
+    return render_template("client_details.html", client=client, tables=tables, client_id=client_id)
+
+@app.route("/get_tables", methods=["GET"])
+def get_tables_api():
+    """Liefert eine Liste aller Datenbanktabellen als JSON zurück."""
+    try:
+        db.Model.metadata.reflect(bind=db.engine)
+        tables = list(db.Model.metadata.tables.keys())
+        return jsonify(tables)
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
+        return jsonify({"error": f"Fehler beim Abrufen der Tabellen: {str(e)}"}), 500
+
+@app.route("/table/<table_name>")
+def table_data(table_name):
+    """Zeigt alle Daten aus einer bestimmten Tabelle an."""
+    
+    # 🛠️ Prüfen, ob die Tabelle existiert
+    db.Model.metadata.reflect(bind=db.engine)
+    if table_name not in db.Model.metadata.tables:
+        logging.error(f"❌ Fehler: Tabelle `{table_name}` existiert nicht in der Datenbank!")
+        return f"Fehler: Tabelle `{table_name}` nicht gefunden!", 404
+
+    logging.info(f"📊 Lade alle Daten aus `{table_name}`")
+
+    try:
+        table = db.Model.metadata.tables[table_name]
+        query = table.select()  # 🔄 KEINE Filterung auf client_id oder asset_id
+
+        with db.engine.connect() as connection:
+            result = connection.execute(query).fetchall()
+
+        # 📌 Korrektur: Spaltennamen aus dem Table-Objekt holen
+        column_names = [column.name for column in table.columns]
+
+        return render_template("table_data.html", table_name=table_name, data=result, columns=column_names)
+
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Abrufen der Daten für `{table_name}`: {str(e)}")
+        return f"Interner Serverfehler: {str(e)}", 500
+
+@app.route("/inbox", methods=["POST"])
+def inbox():
+    """Empfängt JSON-Daten und speichert sie ungeprüft in die Inbox-Tabelle zur späteren Verarbeitung."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "❌ Leere Anfrage erhalten"}), 400
+
+        # ✅ JSON als Zeichenkette speichern
+        json_content = json.dumps(data, ensure_ascii=False)
+
+        # 📥 Neuen Inbox-Eintrag erstellen
+        new_entry = Inbox(
+            acx_inbox_name=data.get("MetaData", {}).get("Name", "Unbekannt"),
+            acx_inbox_description=data.get("MetaData", {}).get("Description", "Keine Beschreibung"),
+            acx_inbox_creator=data.get("MetaData", {}).get("Creator", "Unbekannt"),
+            acx_inbox_vendor=data.get("MetaData", {}).get("Vendor", "Unbekannt"),
+            acx_inbox_content_type=data.get("MetaData", {}).get("ContentType", "unknown"),
+            acx_inbox_content=json_content,  # Ungeprüftes JSON speichern
+        )
+
+        db.session.add(new_entry)
+        db.session.commit()
+
+        logging.info(f"✅ Neuer JSON-Eintrag gespeichert in Inbox-ID: {new_entry.acx_inbox_id}")
+        return jsonify({"message": "✅ Daten erfolgreich gespeichert", "InboxID": str(new_entry.acx_inbox_id)}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"❌ Fehler beim Speichern in Inbox: {str(e)}")
+        return jsonify({"error": "Interner Serverfehler", "details": str(e)}), 500
 
 @app.route("/clients", methods=["GET"])
 def get_clients():
@@ -472,19 +401,39 @@ def send_message_all():
     message = request.form.get("message")
 
     if not message:
-        return "Fehler: Nachricht fehlt!", 400
+        return json.dumps({"status": "error", "message": "Nachricht fehlt!"}), 400
 
     logging.info(f"📤 Nachricht an alle Clients senden: {message}")
 
-    for client_id, client in clients.items():
-        ws = client["websocket"]
-        if ws.close_code is None:  # Verbindung ist noch offen
+    errors = 0  # Zähler für fehlgeschlagene Nachrichten
+
+    for client_id, client in list(clients.items()):  # `list()` um Dict während Iteration zu modifizieren
+        ws = client.get("websocket")
+
+        if ws and ws.close_code is None:  # Prüfe, ob Verbindung noch aktiv ist
             try:
-                asyncio.run(ws.send(message))
+                message_data = {
+                    "action": "message",
+                    "content": message
+                }
+
+                asyncio.run(ws.send(json.dumps(message_data, ensure_ascii=False)))
+                logging.info(f"✅ Nachricht an {client_id} gesendet.")
+
             except Exception as e:
                 logging.error(f"❌ Fehler beim Senden an {client_id}: {str(e)}")
+                errors += 1
 
-    return "Gesendet", 200
+        else:
+            logging.warning(f"⚠️ Client {client_id} nicht mehr verbunden, entferne ihn aus `clients`.")
+            del clients[client_id]  # Entferne Client aus der Liste
+
+    if errors == 0:
+        return json.dumps({"status": "success", "message": "Nachricht erfolgreich an alle gesendet"}), 200
+    else:
+        return json.dumps({"status": "partial_success", "message": f"Nachricht an einige Clients fehlgeschlagen ({errors} Fehler)"}), 207
+
+
 
 @app.route("/send_script", methods=["POST"])
 def send_script():
@@ -626,6 +575,135 @@ def get_scripts():
     except Exception as e:
         return jsonify({"error": f"Fehler beim Abrufen der Skripte: {str(e)}"}), 500
 
+# ------------------------------------
+# 🔄 **WebSocket-Handling**
+# ------------------------------------
+
+async def send_message_to_client(client_id, message):
+    """📩 Sendet eine Nachricht an einen Client."""
+    if client_id in clients:
+        ws = clients[client_id]["websocket"]
+        if ws and not ws.closed:
+            await ws.send(json.dumps({"action": "message", "content": message}))
+
+async def send_message_to_all(message):
+    """📤 Sendet eine Nachricht an alle verbundenen Clients."""
+    for client_id in clients:
+        await send_message_to_client(client_id, message)
+
+async def handle_client(websocket):
+    """Verarbeitet eingehende WebSocket-Verbindungen von Clients mit erweitertem Logging"""
+    try:
+        client_ip = websocket.remote_address[0] if websocket.remote_address else "Unbekannt"
+        logging.info(f"🔌 Neuer Client verbunden von {client_ip}")
+
+        async for message in websocket:
+            try:
+                logging.info(f"📩 Eingehende Nachricht von {client_ip}: {message}")
+
+                data = json.loads(message)
+                action = data.get("action")
+
+                if action == "register":
+                    client_id = data.get("client_id")
+                    hostname = data.get("hostname")
+                    ip_address = data.get("ip")
+
+                    # **Datenvalidierung**
+                    if not client_id or not hostname or not ip_address:
+                        logging.warning(f"⚠️ Ungültige Registrierungsdaten von {client_ip}: {data}")
+                        await websocket.send(json.dumps({"status": "error", "message": "Invalid registration data"}))
+                        continue
+
+                    # **Client im lokalen Dictionary speichern**
+                    clients[client_id] = {"websocket": websocket, "hostname": hostname, "ip": ip_address}
+                    logging.info(f"📥 Neuer Client zwischengespeichert: {clients[client_id]}")
+
+                    # **✅ Datenbank-Operationen für `acx_asset`**
+                    with app.app_context():
+                        try:
+                            logging.info(f"🔎 Suche nach bestehendem Asset für Client {client_id}...")
+                            existing_asset = Asset.query.filter_by(client_id=client_id).first()
+
+                            if existing_asset:
+                                logging.info(f"🔄 Update bestehendes Asset: {existing_asset.client_id} (Last Seen: {existing_asset.last_seen})")
+                                existing_asset.last_seen = datetime.now()
+                            else:
+                                logging.info(f"🆕 Neues Asset wird erstellt für Client {client_id} ({hostname}, {ip_address})")
+                                new_asset = Asset(client_id=client_id, hostname=hostname, ip_address=ip_address)
+                                db.session.add(new_asset)
+
+                            db.session.commit()
+                            check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+                            logging.info(f"✅ Client {client_id} erfolgreich registriert oder aktualisiert in `acx_asset`")
+
+                        except SQLAlchemyError as e:
+                            db.session.rollback()
+                            logging.error(f"❌ Datenbankfehler bei Registrierung von {client_id}: {str(e)}")
+                            await websocket.send(json.dumps({"status": "error", "message": f"Database error: {str(e)}"}))
+                            continue
+                        except Exception as e:
+                            db.session.rollback()
+                            logging.error(f"❌ Unerwarteter Fehler bei DB-Operation für {client_id}: {str(e)}")
+                            await websocket.send(json.dumps({"status": "error", "message": f"Unexpected error: {str(e)}"}))
+                            continue
+
+                    # **✅ Bestätigung an den Client senden**
+                    response = json.dumps({"status": "registered"})
+                    await websocket.send(response)
+                    check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+                    logging.info(f"📤 Registrierungsbestätigung an {hostname} ({ip_address}) gesendet")
+
+                else:
+                    logging.warning(f"⚠️ Unbekannte Aktion von {client_ip}: {data}")
+                    check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+                    await websocket.send(json.dumps({"status": "error", "message": "Unknown action"}))
+
+            except json.JSONDecodeError:
+                logging.error(f"🚨 Ungültiges JSON von {client_ip}: {message}")
+                await websocket.send(json.dumps({"status": "error", "message": "Invalid JSON"}))
+            except Exception as e:
+                logging.error(f"❌ Allgemeiner Fehler in der Nachricht von {client_ip}: {str(e)}")
+                await websocket.send(json.dumps({"status": "error", "message": f"Processing error: {str(e)}"}))
+
+    except websockets.exceptions.ConnectionClosed as e:
+        logging.info(f"❌ WebSocket-Verbindung mit {client_ip} geschlossen: {e}")
+
+    finally:
+        # **Client aus der DB entfernen, wenn Verbindung verloren geht**
+        with app.app_context():
+            disconnected_clients = [key for key, value in clients.items() if value["websocket"] == websocket]
+
+            for client_id in disconnected_clients:
+                try:
+                    logging.info(f"🚪 Entferne Client {client_id} aus Clientspeicher...")
+                    clients.pop(client_id, None)
+
+                    logging.info(f"🔎 Suche nach Asset {client_id} in `acx_asset` zur Löschung...")
+                    asset = Asset.query.filter_by(client_id=client_id).first()
+                    
+                    if asset:
+                        logging.info(f"🗑️ Lösche Asset {client_id} aus `acx_asset`")
+                        # db.session.delete(asset)
+                        # db.session.commit()
+                        logging.info(f"✅ Client {client_id} erfolgreich aus `acx_asset` entfernt.")
+                    else:
+                        logging.warning(f"⚠️ Kein Asset-Eintrag für {client_id} gefunden. Kein Löschvorgang durchgeführt.")
+
+                except SQLAlchemyError as e:
+                    db.session.rollback()
+                    logging.error(f"❌ Fehler beim Löschen von Client {client_id} aus `acx_asset`: {str(e)}")
+                except Exception as e:
+                    logging.error(f"❌ Allgemeiner Fehler beim Entfernen von Client {client_id}: {str(e)}")
+
+        check_for_refresh()  # 🔄 Überprüfe Client-Änderungen für Refresh
+        logging.info("🛑 Client-Entfernung abgeschlossen.")
+
+
+# 📌 **Server-Start**
+def run_flask():
+    """Startet den Flask-Server."""
+    socketio.run(app, host="0.0.0.0", port=5001, debug=False, allow_unsafe_werkzeug=True)
 
 async def start_websocket_server():
     """Startet den WebSocket-Server"""
@@ -646,17 +724,13 @@ async def start_websocket_server():
         while True:
             await asyncio.sleep(1)
 
-# 📌 **Server-Start**
-def run_flask():
-    socketio.run(app, host="0.0.0.0", port=5001, debug=False, allow_unsafe_werkzeug=True)
-
 def main():
     threading.Thread(target=run_flask, daemon=True).start()
     threading.Thread(target=process_inbox, daemon=True).start()  # 🟢 Starte den Inbox-Handler im Hintergrund
     asyncio.run(start_websocket_server())
+    
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-
     main()

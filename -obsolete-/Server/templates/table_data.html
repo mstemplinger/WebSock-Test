@@ -3,34 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ table_name }} - Daten</title>
+    <title>WebSocket Clients</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #495057;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
+<div class="wrapper">
+    <nav class="sidebar">
+        <h2>Navigation</h2>
+        <ul>
+            <li><a href="https://ondeso.online:5001" id="clients-link"><i class="fas fa-users"></i> Connected Clients</a></li>
+            <li><h4>Datenbanktabellen</h4></li>
+            <ul id="dbTables"></ul>
+        </ul>
+    </nav>
+	<main class="content">
+        <div class="container mt-5" id="clients-section">
+			<div class="container mt-4">
+				<h2>Daten für {{ table_name }}</h2>
+				<a href="https://ondeso.online:5001/" class="btn btn-secondary">⬅ Zurück</a>
 
-<div class="container mt-4">
-    <h2>Daten für {{ table_name }}</h2>
-    <a href="{{ url_for('client_details', client_id=client_id) }}" class="btn btn-secondary">⬅ Zurück</a>
-
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                {% for column in columns %}
-                <th>{{ column }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-            <tr>
-                {% for column in columns %}
-                <td>{{ row[column] }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+				<table class="table table-striped mt-3">
+					<thead>
+						<tr>
+							{% for column in columns %}
+							<th>{{ column }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for row in data %}
+						<tr>
+							{% for column in columns %}
+							<td>{{ row[column] }}</td>
+							{% endfor %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
 </div>
+<script>
+    function loadDatabaseTables() {
+		var socket = io();
 
+        socket.on("refresh", function() {
+            console.log("🔄 Auto-Refresh ausgelöst.");
+            location.reload();
+        });
+
+        $(document).ready(function() {
+            // Nachricht an einzelnen Client senden
+            $(".send-btn").click(function() {
+                let clientId = $(this).data("client-id");
+                let message = $(this).closest("tr").find(".message-input").val().trim();
+
+                if (message === "") {
+                    alert("⚠️ Bitte eine Nachricht eingeben!");
+                    return;
+                }
+
+                $.post("/send_message", { client_id: clientId, message: message })
+                    .done(function(response) {
+                        alert("✅ Nachricht erfolgreich gesendet!");
+                    })
+                    .fail(function(xhr) {
+                        alert("❌ Fehler beim Senden: " + xhr.responseText);
+                    });
+            });
+
+            // STOP an einzelnen Client senden
+            $(".stop-btn").click(function() {
+                let clientId = $(this).data("client-id");
+
+                $.post("/send_message", { client_id: clientId, message: "STOP" })
+                    .done(function(response) {
+                        alert("🛑 STOP-Nachricht gesendet!");
+                    })
+                    .fail(function(xhr) {
+                        alert("❌ Fehler beim Senden: " + xhr.responseText);
+                    });
+            });
+
+            
+			// Skript an einzelnen Client senden
+			$(".script-btn").click(function() {
+				let clientId = $(this).data("client-id");
+				let scriptName = $(this).closest("tr").find(".script-dropdown").val(); // Dropdown-Änderung
+				let scriptType = $(this).closest("tr").find(".script-type").val();
+
+				if (!scriptName) {
+					alert("⚠️ Bitte ein Skript auswählen!");
+					return;
+				}
+
+				$.post("/send_script", { client_id: clientId, script_name: scriptName, script_type: scriptType })
+					.done(function(response) {
+						alert("✅ Skript erfolgreich gesendet!");
+					})
+					.fail(function(xhr) {
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+			// Nachricht an alle Clients senden
+			$("#sendAllBtn").click(function() {
+				let message = $("#globalMessage").val().trim();
+
+				if (message === "") {
+					alert("⚠️ Bitte eine Nachricht eingeben!");
+					return;
+				}
+
+				$.post("/send_message_all", { message: message })
+					.done(function(response) {
+						alert("✅ Nachricht erfolgreich an alle Clients gesendet!");
+					})
+					.fail(function(xhr) {
+						console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+			// STOP an alle Clients senden
+			$("#stopAllBtn").click(function() {
+				$.post("/send_message_all", { message: "STOP" })
+					.done(function(response) {
+						alert("🛑 STOP-Nachricht erfolgreich an alle Clients gesendet!");
+					})
+					.fail(function(xhr) {
+						console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+
+			// Skript an alle Clients senden
+			$("#sendScriptAllBtn").click(function() {
+				let scriptName = $("#globalScriptDropdown").val();
+				let scriptType = $("#globalScriptType").val();
+
+				if (!scriptName) {
+					alert("⚠️ Bitte ein Skript auswählen!");
+					return;
+				}
+
+				$.post("/send_script_all", { script_name: scriptName, script_type: scriptType })
+					.done(function(response) {
+						alert("✅ Skript erfolgreich an alle gesendet!");
+					})
+					.fail(function(xhr) {
+						console.error("❌ Fehler beim Senden des Skripts:", xhr.responseText);
+						alert("❌ Fehler beim Senden: " + xhr.responseText);
+					});
+			});
+		});
+
+		
+		function loadScripts() {
+			$.get("/get_scripts", function(data) {
+				$(".script-dropdown, #globalScriptDropdown").empty().append('<option value="">Bitte Skript auswählen...</option>');
+
+				if (data.error) {
+					console.error("❌ Fehler beim Laden der Skripte:", data.error);
+					$(".script-dropdown, #globalScriptDropdown").append('<option value="">⚠️ Keine Skripte gefunden!</option>');
+				} else {
+					data.forEach(script => {
+						$(".script-dropdown, #globalScriptDropdown").append(`<option value="${script.name}">${script.name}</option>`);
+					});
+				}
+			}).fail(function(xhr) {
+				console.error("❌ Fehler beim Abrufen der Skripte:", xhr.responseText);
+				$(".script-dropdown, #globalScriptDropdown").append('<option value="">⚠️ Fehler beim Laden!</option>');
+			});
+		}
+
+
+		// Skriptliste beim Laden abrufen
+		$(document).ready(function() {
+			loadScripts();
+		});
+	
+	
+        $.get("/get_tables", function(data) {
+			$("#dbTables").empty();
+			if (data.error) {
+				$("#dbTables").append('<li>⚠️ Fehler beim Laden der Tabellen!</li>');
+			} else {
+				data.forEach(table => {
+					$("#dbTables").append(`<li><a href="./${table}" ">${table}</a></li>`);
+				});
+
+				// Event Listener für Tabellen-Links hinzufügen
+				$(".table-link").click(function(event) {
+					event.preventDefault();
+					let tableName = $(this).data("table");
+					loadTableData(tableName);
+				});
+			}
+		}).fail(function(xhr) {
+			console.error("Fehler beim Abrufen der Tabellen:", xhr.responseText);
+			$("#dbTables").append('<li>⚠️ Fehler beim Laden!</li>');
+		});
+    }
+    
+    $(document).ready(function() {
+        loadDatabaseTables();
+    });
+</script>
 </body>
 </html>

@@ -162,7 +162,7 @@
 
 <script>
     function loadDatabaseTables() {
-var socket = io();
+		var socket = io();
 
         socket.on("refresh", function() {
             console.log("🔄 Auto-Refresh ausgelöst.");
@@ -302,18 +302,25 @@ var socket = io();
 	
 	
         $.get("/get_tables", function(data) {
-            $("#dbTables").empty();
-            if (data.error) {
-                $("#dbTables").append('<li>⚠️ Fehler beim Laden der Tabellen!</li>');
-            } else {
-                data.forEach(table => {
-                    $("#dbTables").append(`<li><a href="#" class="table-link" data-table="${table}">${table}</a></li>`);
-                });
-            }
-        }).fail(function(xhr) {
-            console.error("Fehler beim Abrufen der Tabellen:", xhr.responseText);
-            $("#dbTables").append('<li>⚠️ Fehler beim Laden!</li>');
-        });
+			$("#dbTables").empty();
+			if (data.error) {
+				$("#dbTables").append('<li>⚠️ Fehler beim Laden der Tabellen!</li>');
+			} else {
+				data.forEach(table => {
+					$("#dbTables").append(`<li><a href="./table/${table}" ">${table}</a></li>`);
+				});
+
+				// Event Listener für Tabellen-Links hinzufügen
+				$(".table-link").click(function(event) {
+					event.preventDefault();
+					let tableName = $(this).data("table");
+					loadTableData(tableName);
+				});
+			}
+		}).fail(function(xhr) {
+			console.error("Fehler beim Abrufen der Tabellen:", xhr.responseText);
+			$("#dbTables").append('<li>⚠️ Fehler beim Laden!</li>');
+		});
     }
     
     $(document).ready(function() {
