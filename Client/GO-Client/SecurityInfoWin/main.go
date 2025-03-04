@@ -21,8 +21,18 @@ var (
 	clientCfgPath = filepath.Join(baseDir, "client_config.ini")
 	logFilePath   = filepath.Join(logDir, "security_scan.log")
 	jsonFilePath  = filepath.Join(securityDir, "security_inventory.json")
-	apiEndpoint   = "https://85.215.147.108:5001/inbox"
+	apiEndpoint   = "https://ondeso.online:5001/inbox" // Standard-API-Endpunkt
 )
+
+func init() {
+	// Falls ein Argument übergeben wurde, wird es als API-Endpunkt genutzt
+	if len(os.Args) > 1 {
+		apiEndpoint = os.Args[1]
+		writeLog(fmt.Sprintf("🔄 API-Endpunkt auf Parameterwert gesetzt: %s", apiEndpoint))
+	} else {
+		writeLog("🔹 Kein API-Endpunkt als Parameter angegeben, Standardwert wird verwendet.")
+	}
+}
 
 type MetaData struct {
 	ContentType string `json:"ContentType"`
@@ -100,7 +110,6 @@ func writeLog(message string) {
 	fmt.Println(logEntry)
 }
 
-// Holt oder generiert eine Client-ID und speichert sie in der INI-Datei
 func getClientID() string {
 	cfg, err := ini.Load(clientCfgPath)
 	if err != nil {
@@ -126,7 +135,6 @@ func getClientID() string {
 	return clientID
 }
 
-// Erstellt eine GUID
 func generateGUID() string {
 	b := make([]byte, 16)
 	rand.Read(b)
@@ -138,7 +146,7 @@ func runPowershellCommand(command string) string {
 	cmd := exec.Command("powershell", "-Command", command)
 	output, err := cmd.Output()
 	if err != nil {
-		writeLog("Failed to execute command: " + err.Error())
+		writeLog("⚠️ Fehler beim Ausführen des PowerShell-Befehls: " + err.Error())
 		return ""
 	}
 	return strings.TrimSpace(string(output))
@@ -148,24 +156,11 @@ func collectSecurityData() ExportData {
 	assetID := getClientID()
 
 	data := SecurityData{
-		ScanDate:        time.Now().Format(time.RFC3339),
-		AssetID:         assetID,
-		OSName:          runPowershellCommand("(Get-CimInstance Win32_OperatingSystem).Caption"),
-		OSVersion:       runPowershellCommand("(Get-CimInstance Win32_OperatingSystem).Version"),
-		OSLastBoot:      runPowershellCommand("(Get-CimInstance Win32_OperatingSystem).LastBootUpTime | Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ'"),
-		FirewallStatus:  runPowershellCommand("Get-NetFirewallProfile | Select-Object Name, Enabled | ConvertTo-Json -Compress"),
-		Antivirus:       runPowershellCommand("Get-CimInstance -Namespace root\\SecurityCenter2 -ClassName AntiVirusProduct | Select-Object -ExpandProperty displayName"),
-		WindowsDefender: runPowershellCommand("Get-MpComputerStatus | Select-Object -ExpandProperty AMRunningMode"),
-		BitLocker:       runPowershellCommand("Get-BitLockerVolume | ForEach-Object { if ($_.ProtectionStatus -eq 1) { 'Enabled' } else { 'Disabled' } }"),
-		UACStatus:       runPowershellCommand("(Get-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System -Name EnableLUA).EnableLUA"),
-		LocalAdmins:     runPowershellCommand("Get-LocalGroupMember Administrators | Select-Object -ExpandProperty Name"),
-		RemoteDesktop:   runPowershellCommand("(Get-ItemProperty -Path HKLM:\\System\\CurrentControlSet\\Control\\Terminal Server -Name fDenyTSConnections).fDenyTSConnections"),
-		SMBStatus:       runPowershellCommand("(Get-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters -Name SMB1).SMB1"),
-		GuestAccounts:   runPowershellCommand("Get-LocalGroupMember Guests | Select-Object -ExpandProperty Name"),
-		UserAccounts:    runPowershellCommand("Get-LocalUser | Select-Object -ExpandProperty Name"),
-		OpenPorts:       runPowershellCommand("Get-NetTCPConnection | Select-Object -ExpandProperty LocalPort | Sort-Object -Unique"),
-		FailedLogins:    runPowershellCommand("Get-WinEvent -LogName Security -FilterHashtable @{Id=4625} -MaxEvents 10"),
-		LastPatchDate:   runPowershellCommand("(Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 1).InstalledOn"),
+		ScanDate:   time.Now().Format(time.RFC3339),
+		AssetID:    assetID,
+		OSName:     runPowershellCommand("(Get-CimInstance Win32_OperatingSystem).Caption"),
+		OSVersion:  runPowershellCommand("(Get-CimInstance Win32_OperatingSystem).Version"),
+		OSLastBoot: runPowershellCommand("(Get-CimInstance Win32_OperatingSystem).LastBootUpTime | Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ'"),
 	}
 
 	return ExportData{
@@ -180,28 +175,7 @@ func collectSecurityData() ExportData {
 		Content: Content{
 			TableName: "usr_security_inventory",
 			Consts:    []Const{{Identifier: "ScanDate", Value: time.Now().Format(time.RFC3339)}},
-			FieldMappings: []FieldMapping{
-				{"scan_date", "{scan_date}", true, true},
-				{"asset_id", "{asset_id}", false, true},
-				{"os_name", "{os_name}", false, true},
-				{"os_version", "{os_version}", false, true},
-				{"os_last_boot", "{os_last_boot}", false, true},
-				{"firewall_status", "{firewall_status}", false, true},
-				{"antivirus_installed", "{antivirus_installed}", false, true},
-				{"windows_defender", "{windows_defender}", false, true},
-				{"bitlocker_status", "{bitlocker_status}", false, true},
-				{"uac_status", "{uac_status}", false, true},
-				{"local_admins", "{local_admins}", false, true},
-				{"remote_desktop", "{remote_desktop}", false, true},
-				{"smb_status", "{smb_status}", false, true},
-				{"guest_account", "{guest_account}", false, true},
-				{"user_accounts", "{user_accounts}", false, true},
-				{"open_ports", "{open_ports}", false, true},
-				{"failed_logins", "{failed_logins}", false, true},
-				{"local_admins", "{local_admins}", false, true},
-				{"last_patch_date", "{last_patch_date}", false, true},
-			},
-			Data: []SecurityData{data},
+			Data:      []SecurityData{data},
 		},
 	}
 }
@@ -209,17 +183,17 @@ func collectSecurityData() ExportData {
 func saveJSON(data ExportData) {
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		writeLog("Failed to serialize JSON: " + err.Error())
+		writeLog("❌ Fehler beim JSON-Export: " + err.Error())
 		return
 	}
 	os.WriteFile(jsonFilePath, jsonData, 0644)
-	writeLog("JSON file saved: " + jsonFilePath)
+	writeLog("✅ JSON-Datei gespeichert: " + jsonFilePath)
 }
 
 func uploadJSON() {
 	file, err := os.Open(jsonFilePath)
 	if err != nil {
-		writeLog("Failed to open JSON file: " + err.Error())
+		writeLog("❌ Fehler beim Öffnen der JSON-Datei: " + err.Error())
 		return
 	}
 	defer file.Close()
@@ -227,24 +201,24 @@ func uploadJSON() {
 	client := &http.Client{}
 	request, err := http.NewRequest("POST", apiEndpoint, file)
 	if err != nil {
-		writeLog("Failed to create request: " + err.Error())
+		writeLog("❌ Fehler beim Erstellen der Anfrage: " + err.Error())
 		return
 	}
 	request.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(request)
 	if err != nil {
-		writeLog("Failed to send JSON: " + err.Error())
+		writeLog("❌ Fehler beim Senden der JSON-Datei: " + err.Error())
 		return
 	}
 	defer response.Body.Close()
-	writeLog("JSON uploaded successfully!")
+	writeLog("✅ JSON erfolgreich hochgeladen!")
 }
 
 func main() {
 	ensureDirectories(baseDir, securityDir, logDir)
-	writeLog("Starting security scan...")
+	writeLog("🚀 Starte Sicherheits-Scan...")
 	data := collectSecurityData()
 	saveJSON(data)
 	uploadJSON()
-	writeLog("Security scan completed!")
+	writeLog("🎯 Sicherheits-Scan abgeschlossen!")
 }
