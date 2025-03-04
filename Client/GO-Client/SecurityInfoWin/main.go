@@ -21,7 +21,7 @@ var (
 	clientCfgPath = filepath.Join(baseDir, "client_config.ini")
 	logFilePath   = filepath.Join(logDir, "security_scan.log")
 	jsonFilePath  = filepath.Join(securityDir, "security_inventory.json")
-	apiEndpoint   = "http://85.215.147.108:5001/inbox"
+	apiEndpoint   = "https://85.215.147.108:5001/inbox"
 )
 
 type MetaData struct {

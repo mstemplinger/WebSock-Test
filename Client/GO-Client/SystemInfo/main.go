@@ -22,7 +22,7 @@ var (
 	scriptDir     = filepath.Join(baseDir, "scriptfiles")
 	clientCfgPath = filepath.Join(baseDir, "client_config.ini")
 	logFilePath   = filepath.Join(logDir, "client_stream.log")
-	apiEndpoint   = "http://85.215.147.108:5001/inbox"
+	apiEndpoint   = "https://85.215.147.108:5001/inbox"
 	clientID      string
 )
 
