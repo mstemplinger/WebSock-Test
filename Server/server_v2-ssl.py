@@ -149,21 +149,6 @@ def table_data(table_name):
         logging.error(f"❌ Fehler beim Abrufen der Daten für `{table_name}`: {str(e)}")
         return f"Interner Serverfehler: {str(e)}", 500
 
-
-def get_tables():
-    """Gibt alle Tabellen in der Datenbank zurück."""
-    try:
-        logging.info("🔄 Lade Tabellen aus der Datenbank...")
-        db.Model.metadata.reflect(bind=db.engine)
-        tables = list(db.Model.metadata.tables.keys())
-        logging.info(f"📋 Tabellen gefunden: {tables}")
-        return tables
-    except Exception as e:
-        logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
-        return []
-
-
-
 @app.route("/inbox", methods=["POST"])
 def inbox():
     """Empfängt JSON-Daten und speichert sie ungeprüft in die Inbox-Tabelle zur späteren Verarbeitung."""
@@ -196,6 +181,94 @@ def inbox():
         logging.error(f"❌ Fehler beim Speichern in Inbox: {str(e)}")
         return jsonify({"error": "Interner Serverfehler", "details": str(e)}), 500
 
+@app.route("/send_binary", methods=["POST"])
+def send_binary():
+    """Sendet eine Binärdatei (.exe, .bin, .sh) an einen WebSocket-Client"""
+    try:
+        client_id = request.form.get("client_id")
+        binary_name = request.form.get("binary_name")
+
+        if not client_id or not binary_name:
+            return "Fehler: Client-ID oder Binärdateiname fehlt!", 400
+
+        binary_path = os.path.join(SCRIPT_DIR, binary_name)
+
+        if not os.path.exists(binary_path):
+            return f"Fehler: Binärdatei {binary_name} nicht gefunden!", 404
+
+        # MIME-Typ bestimmen
+        mime_type, _ = mimetypes.guess_type(binary_path)
+        if not mime_type:
+            mime_type = "application/octet-stream"
+
+        if client_id in clients:
+            ws = clients[client_id]["websocket"]
+
+            if ws.close_code is None:
+                try:
+                    with open(binary_path, "rb") as binary_file:
+                        binary_content = binary_file.read()
+
+                    binary_content_base64 = base64.b64encode(binary_content).decode("utf-8")
+
+                    # Asynchroner Versand mit `asyncio.run_coroutine_threadsafe()`
+                    asyncio.run_coroutine_threadsafe(
+                        send_binary_chunks(ws, binary_name, binary_content_base64, mime_type),
+                        loop
+                    )
+
+                    return "Binärdatei wird in Chunks gesendet", 200
+                except Exception as e:
+                    logging.error(f"❌ Fehler beim Verarbeiten der Binärdatei: {e}")
+                    return f"Fehler beim Senden: {str(e)}", 500
+            else:
+                del clients[client_id]
+                return "Client nicht mehr verbunden", 410
+
+        return "Client nicht gefunden", 404
+
+    except Exception as e:
+        logging.exception("❌ Unerwarteter Fehler in /send_binary:")
+        return f"Interner Fehler: {str(e)}", 500
+
+def get_tables():
+    """Gibt alle Tabellen in der Datenbank zurück."""
+    try:
+        logging.info("🔄 Lade Tabellen aus der Datenbank...")
+        db.Model.metadata.reflect(bind=db.engine)
+        tables = list(db.Model.metadata.tables.keys())
+        logging.info(f"📋 Tabellen gefunden: {tables}")
+        return tables
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
+        return []
+
+
+async def send_binary_chunks(ws, binary_name, binary_content_base64, mime_type):
+    """Sendet eine Binärdatei (.exe, .bin, .sh) in Chunks an den WebSocket-Client"""
+    try:
+        total_chunks = (len(binary_content_base64) + CHUNK_SIZE - 1) // CHUNK_SIZE
+        logging.info(f"📤 Sende Binärdatei {binary_name} in {total_chunks} Chunks.")
+
+        for chunk_index in range(total_chunks):
+            start = chunk_index * CHUNK_SIZE
+            end = start + CHUNK_SIZE
+            binary_chunk = binary_content_base64[start:end]
+
+            chunk_message = json.dumps({
+                "action": "upload_binary_chunk",
+                "binary_name": binary_name,
+                "chunk_index": chunk_index,
+                "total_chunks": total_chunks,
+                "binary_chunk": binary_chunk,
+                "mime_type": mime_type
+            }, ensure_ascii=False)
+
+            await ws.send(chunk_message)
+            logging.debug(f"📤 Chunk {chunk_index + 1}/{total_chunks} gesendet ({len(binary_chunk)} Bytes)")
+
+    except Exception as e:
+        logging.error(f"❌ Fehler beim Senden der Binärdatei: {e}")
 
 def get_column_lengths(table_name):
     """Liest die maximale Feldlängen der Spalten einer Tabelle aus."""

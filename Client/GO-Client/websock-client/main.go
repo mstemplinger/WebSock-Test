@@ -352,6 +352,60 @@ func processMessage(msg []byte) {
 
 	case "upload_script_chunk":
 		processIncomingChunk(data)
+
+	case "upload_binary_chunk": // 🔥 Neuer Handler für Binärdateien
+		processIncomingBinaryChunk(data)
+	}
+}
+
+func processIncomingBinaryChunk(data map[string]interface{}) {
+	binaryName := sanitizeFilename(data["binary_name"].(string))
+	chunkIndex := int(data["chunk_index"].(float64))
+	totalChunks := int(data["total_chunks"].(float64))
+	binaryChunk := data["binary_chunk"].(string)
+
+	if _, exists := scriptChunks[binaryName]; !exists {
+		scriptChunks[binaryName] = make(map[int]string)
+		scriptTotal[binaryName] = totalChunks
+	}
+	scriptChunks[binaryName][chunkIndex] = binaryChunk
+
+	if len(scriptChunks[binaryName]) == totalChunks {
+		writeLog(fmt.Sprintf("🔄 Alle %d Chunks von %s empfangen. Datei wird gespeichert.", totalChunks, binaryName))
+		saveBinary(binaryName, scriptChunks[binaryName])
+		delete(scriptChunks, binaryName)
+		delete(scriptTotal, binaryName)
+	}
+}
+
+func saveBinary(binaryName string, chunks map[int]string) {
+	fullBinaryBase64 := ""
+	for i := 0; i < len(chunks); i++ {
+		fullBinaryBase64 += chunks[i]
+	}
+	binaryContent, err := base64.StdEncoding.DecodeString(fullBinaryBase64)
+	if err != nil {
+		writeLog(fmt.Sprintf("❌ Fehler beim Base64-Dekodieren von %s: %v", binaryName, err))
+		return
+	}
+
+	filePath := filepath.Join(scriptDir, binaryName)
+
+	err = os.WriteFile(filePath, binaryContent, 0755)
+	if err != nil {
+		writeLog(fmt.Sprintf("❌ Fehler beim Speichern der Binärdatei %s: %v", filePath, err))
+		return
+	}
+	writeLog(fmt.Sprintf("💾 Binärdatei gespeichert: %s", filePath))
+
+	// **Linux-Binaries ausführbar machen**
+	if strings.HasSuffix(filePath, ".bin") || strings.HasSuffix(filePath, ".sh") {
+		err = os.Chmod(filePath, 0755)
+		if err != nil {
+			writeLog(fmt.Sprintf("❌ Fehler beim Setzen von Ausführungsrechten für %s: %v", filePath, err))
+			return
+		}
+		writeLog(fmt.Sprintf("🚀 Datei %s wurde ausführbar gemacht.", filePath))
 	}
 }
 
