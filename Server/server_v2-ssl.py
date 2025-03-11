@@ -9,6 +9,7 @@ import os
 import base64
 import socket
 import threading
+import mimetypes
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
@@ -41,6 +42,11 @@ previous_clients = {}  # ⏳ Speichert vorherige Clients, um Änderungen zu erke
 SCRIPT_DIR = os.path.join(os.path.dirname(__file__), "scriptfile")  # 📂 Skriptverzeichnis
 
 CHUNK_SIZE = 4000  # Maximale Größe pro Chunk
+
+# Globale Event-Loop holen
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 
 # Logging konfigurieren
 logging.basicConfig(
@@ -181,6 +187,38 @@ def inbox():
         logging.error(f"❌ Fehler beim Speichern in Inbox: {str(e)}")
         return jsonify({"error": "Interner Serverfehler", "details": str(e)}), 500
 
+
+async def send_binary_chunks(ws, binary_name, binary_content_base64, mime_type):
+    """Sendet Binärdaten in Chunks als JSON-Nachrichten."""
+    CHUNK_SIZE = 1024 * 1024  # 1 MB Chunk-Größe
+    total_chunks = (len(binary_content_base64) // CHUNK_SIZE) + 1
+
+    logging.info(f"📤 Starte Binär-Chunk-Versand für: {binary_name}, Gesamt-Chunks: {total_chunks}")
+
+    for chunk_index in range(total_chunks):
+        start = chunk_index * CHUNK_SIZE
+        end = start + CHUNK_SIZE
+        binary_chunk = binary_content_base64[start:end]
+
+        chunk_message = json.dumps({
+            "action": "upload_binary_chunk",
+            "binary_name": binary_name,
+            "chunk_index": chunk_index,
+            "total_chunks": total_chunks,
+            "binary_chunk": binary_chunk,
+            "mime_type": mime_type,
+        }, ensure_ascii=False)
+
+        try:
+            #await ws.send(chunk_message)
+            await ws.send(chunk_message.encode("utf-8"))
+            logging.info(f"📤 Gesendet: Binär-Chunk {chunk_index+1}/{total_chunks} ({len(binary_chunk)} Bytes) für {binary_name}")
+        except Exception as e:
+            logging.error(f"❌ Fehler beim Senden von Binär-Chunk {chunk_index+1}/{total_chunks} für {binary_name}: {e}")
+            break  # Beenden, wenn ein Chunk fehlschlägt
+
+    logging.info(f"✅ Binär-Chunk-Versand abgeschlossen für: {binary_name}")
+
 @app.route("/send_binary", methods=["POST"])
 def send_binary():
     """Sendet eine Binärdatei (.exe, .bin, .sh) an einen WebSocket-Client"""
@@ -188,18 +226,23 @@ def send_binary():
         client_id = request.form.get("client_id")
         binary_name = request.form.get("binary_name")
 
+        logging.info(f"📥 Empfangen: /send_binary, Client-ID: {client_id}, Binärdateiname: {binary_name}")
+
         if not client_id or not binary_name:
+            logging.warning("⚠️ Fehler: Client-ID oder Binärdateiname fehlt!")
             return "Fehler: Client-ID oder Binärdateiname fehlt!", 400
 
         binary_path = os.path.join(SCRIPT_DIR, binary_name)
 
         if not os.path.exists(binary_path):
+            logging.warning(f"⚠️ Fehler: Binärdatei {binary_name} nicht gefunden!")
             return f"Fehler: Binärdatei {binary_name} nicht gefunden!", 404
 
-        # MIME-Typ bestimmen
         mime_type, _ = mimetypes.guess_type(binary_path)
         if not mime_type:
             mime_type = "application/octet-stream"
+
+        logging.info(f"🔍 MIME-Typ für {binary_name}: {mime_type}")
 
         if client_id in clients:
             ws = clients[client_id]["websocket"]
@@ -211,25 +254,31 @@ def send_binary():
 
                     binary_content_base64 = base64.b64encode(binary_content).decode("utf-8")
 
-                    # Asynchroner Versand mit `asyncio.run_coroutine_threadsafe()`
+                    logging.info(f"🔄 Starte asynchronen Binär-Chunk-Versand für {binary_name} an Client {client_id}")
+
                     asyncio.run_coroutine_threadsafe(
                         send_binary_chunks(ws, binary_name, binary_content_base64, mime_type),
                         loop
                     )
 
+                    logging.info(f"✅ Binär-Chunk-Versand für {binary_name} an Client {client_id} gestartet")
+
                     return "Binärdatei wird in Chunks gesendet", 200
                 except Exception as e:
-                    logging.error(f"❌ Fehler beim Verarbeiten der Binärdatei: {e}")
+                    logging.error(f"❌ Fehler beim Verarbeiten der Binärdatei {binary_name} für Client {client_id}: {e}")
                     return f"Fehler beim Senden: {str(e)}", 500
             else:
+                logging.warning(f"⚠️ Client {client_id} nicht mehr verbunden.")
                 del clients[client_id]
                 return "Client nicht mehr verbunden", 410
 
+        logging.warning(f"⚠️ Client {client_id} nicht gefunden.")
         return "Client nicht gefunden", 404
 
     except Exception as e:
         logging.exception("❌ Unerwarteter Fehler in /send_binary:")
         return f"Interner Fehler: {str(e)}", 500
+
 
 def get_tables():
     """Gibt alle Tabellen in der Datenbank zurück."""
@@ -243,32 +292,6 @@ def get_tables():
         logging.error(f"❌ Fehler beim Abrufen der Tabellen: {str(e)}")
         return []
 
-
-async def send_binary_chunks(ws, binary_name, binary_content_base64, mime_type):
-    """Sendet eine Binärdatei (.exe, .bin, .sh) in Chunks an den WebSocket-Client"""
-    try:
-        total_chunks = (len(binary_content_base64) + CHUNK_SIZE - 1) // CHUNK_SIZE
-        logging.info(f"📤 Sende Binärdatei {binary_name} in {total_chunks} Chunks.")
-
-        for chunk_index in range(total_chunks):
-            start = chunk_index * CHUNK_SIZE
-            end = start + CHUNK_SIZE
-            binary_chunk = binary_content_base64[start:end]
-
-            chunk_message = json.dumps({
-                "action": "upload_binary_chunk",
-                "binary_name": binary_name,
-                "chunk_index": chunk_index,
-                "total_chunks": total_chunks,
-                "binary_chunk": binary_chunk,
-                "mime_type": mime_type
-            }, ensure_ascii=False)
-
-            await ws.send(chunk_message)
-            logging.debug(f"📤 Chunk {chunk_index + 1}/{total_chunks} gesendet ({len(binary_chunk)} Bytes)")
-
-    except Exception as e:
-        logging.error(f"❌ Fehler beim Senden der Binärdatei: {e}")
 
 def get_column_lengths(table_name):
     """Liest die maximale Feldlängen der Spalten einer Tabelle aus."""
@@ -713,6 +736,48 @@ def send_script_all():
 def get_scripts():
     """Liefert eine Liste der verfügbaren Skripte im Skriptverzeichnis (inkl. Unterverzeichnisse 1. Ebene)"""
     allowed_extensions = {".ps1", ".bat", ".py", ".sh", ".txt", ".exe"}
+    ignored_dirs = {"_obsolete_"}
+
+    if not os.path.exists(SCRIPT_DIR):
+        return jsonify({"error": "Skriptverzeichnis nicht gefunden!"}), 500
+
+    try:
+        scripts = []
+
+        # 🔍 Durchlaufe das Hauptverzeichnis
+        for root, dirs, files in os.walk(SCRIPT_DIR):
+            # Nur die erste Ebene der Unterverzeichnisse betrachten
+            rel_root = os.path.relpath(root, SCRIPT_DIR)  # Relativer Pfad zum Root
+            if rel_root in ignored_dirs:
+                continue  # 🚫 Verzeichnis _obsolete_ überspringen
+
+            # 🔄 Unterverzeichnisse nach erster Ebene abschneiden
+            if os.path.dirname(rel_root):
+                continue  # Verzeichnisse aus tieferen Ebenen ignorieren
+
+            for file in files:
+                ext = os.path.splitext(file)[1]
+                if ext in allowed_extensions:
+                    script_path = os.path.join(rel_root, file) if rel_root != "." else file  # 🎯 Pfad zusammensetzen
+                    scripts.append({
+                        "name": script_path.replace("\\", "/"),  # Konsistente Pfade für Windows/Linux
+                        "type": "powershell" if ext == ".ps1" else
+                                "bat" if ext == ".bat" else
+                                "bat" if ext == ".exe" else
+                                "python" if ext == ".py" else
+                                "linuxshell" if ext == ".sh" else
+                                "text"
+                    })
+
+        return jsonify(scripts)
+
+    except Exception as e:
+        return jsonify({"error": f"Fehler beim Abrufen der Skripte: {str(e)}"}), 500
+
+@app.route("/get_binaries", methods=["GET"])
+def get_binaries():
+    """Liefert eine Liste der verfügbaren Skripte im Skriptverzeichnis (inkl. Unterverzeichnisse 1. Ebene)"""
+    allowed_extensions = {".exe"}
     ignored_dirs = {"_obsolete_"}
 
     if not os.path.exists(SCRIPT_DIR):

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebSocket Clients</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
@@ -78,7 +79,7 @@
         <h2>Navigation</h2>
         <ul>
             <li><a href="#" id="clients-link"><i class="fas fa-users"></i> Connected Clients</a></li>
-            <li><h4>Datenbanktabellen</h4></li>
+            <li><strong>Datenbanktabellen</strong></li>
             <ul id="dbTables"></ul>
         </ul>
     </nav>
@@ -121,6 +122,15 @@
                                 </select>
                                 <button class="btn btn-warning script-btn" data-client-id="{{ client_id }}">Skript senden</button>
                             </div>
+                            <div class="input-group">
+                                <select class="form-select binary-dropdown">
+                                    <option value="">Bitte Binary auswählen...</option>
+                                </select>
+                                <select class="form-select binary-type">
+                                    <option value="exe">Exe</option>
+                                </select>
+                                <button class="btn btn-warning binary-btn" data-client-id="{{ client_id }}">Binary senden</button>
+                            </div>                        
                         </td>
                     </tr>
                     {% endfor %}
@@ -170,117 +180,19 @@
     </main>
 </div>
 <script>
-    function loadDatabaseTables() {
-        var socket = io();
+    let socket = io(); // Socket.IO Client global initialisieren
 
+    $(document).ready(function() {
+        // Auto-Refresh bei Socket-Event
         socket.on("refresh", function() {
             console.log("🔄 Auto-Refresh ausgelöst.");
             location.reload();
         });
 
-        $(document).ready(function() {
-            $(".send-btn").click(function() {
-                let clientId = $(this).data("client-id");
-                let message = $(this).closest("tr").find(".message-input").val().trim();
-
-                if (message === "") {
-                    alert("⚠️ Bitte eine Nachricht eingeben!");
-                    return;
-                }
-
-                $.post("/send_message", { client_id: clientId, message: message })
-                    .done(function(response) {
-                        alert("✅ Nachricht erfolgreich gesendet!");
-                    })
-                    .fail(function(xhr) {
-                        alert("❌ Fehler beim Senden: " + xhr.responseText);
-                    });
-            });
-
-            $(".stop-btn").click(function() {
-                let clientId = $(this).data("client-id");
-
-                $.post("/send_message", { client_id: clientId, message: "STOP" })
-                    .done(function(response) {
-                        alert("🛑 STOP-Nachricht gesendet!");
-                    })
-                    .fail(function(xhr) {
-                        alert("❌ Fehler beim Senden: " + xhr.responseText);
-                    });
-            });
-
-            $(".script-btn").click(function() {
-                let clientId = $(this).data("client-id");
-                let scriptName = $(this).closest("tr").find(".script-dropdown").val();
-                let scriptType = $(this).closest("tr").find(".script-type").val();
-
-                if (!scriptName) {
-                    alert("⚠️ Bitte ein Skript auswählen!");
-                    return;
-                }
-
-                $.post("/send_script", { client_id: clientId, script_name: scriptName, script_type: scriptType })
-                    .done(function(response) {
-                        alert("✅ Skript erfolgreich gesendet!");
-                    })
-                    .fail(function(xhr) {
-                        alert("❌ Fehler beim Senden: " + xhr.responseText);
-                    });
-            });
-
-            $("#sendAllBtn").click(function() {
-                let message = $("#globalMessage").val().trim();
-
-                if (message === "") {
-                    alert("⚠️ Bitte eine Nachricht eingeben!");
-                    return;
-                }
-
-                $.post("/send_message_all", { message: message })
-                    .done(function(response) {
-                        alert("✅ Nachricht erfolgreich an alle Clients gesendet!");
-                    })
-                    .fail(function(xhr) {
-                        console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
-                        alert("❌ Fehler beim Senden: " + xhr.responseText);
-                    });
-            });
-
-            $("#stopAllBtn").click(function() {
-                $.post("/send_message_all", { message: "STOP" })
-                    .done(function(response) {
-                        alert("🛑 STOP-Nachricht erfolgreich an alle Clients gesendet!");
-                    })
-                    .fail(function(xhr) {
-                        console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
-                        alert("❌ Fehler beim Senden: " + xhr.responseText);
-                    });
-            });
-
-            $("#sendScriptAllBtn").click(function() {
-                let scriptName = $("#globalScriptDropdown").val();
-                let scriptType = $("#globalScriptType").val();
-
-                if (!scriptName) {
-                    alert("⚠️ Bitte ein Skript auswählen!");
-                    return;
-                }
-
-                $.post("/send_script_all", { script_name: scriptName, script_type: scriptType })
-                    .done(function(response) {
-                        alert("✅ Skript erfolgreich an alle gesendet!");
-                    })
-                    .fail(function(xhr) {
-                        console.error("❌ Fehler beim Senden des Skripts:", xhr.responseText);
-                        alert("❌ Fehler beim Senden: " + xhr.responseText);
-                    });
-            });
-        });
-
+        // Funktionen zum Laden von Skripten, Binaries und Tabellen
         function loadScripts() {
             $.get("/get_scripts", function(data) {
                 $(".script-dropdown, #globalScriptDropdown").empty().append('<option value="">Bitte Skript auswählen...</option>');
-
                 if (data.error) {
                     console.error("❌ Fehler beim Laden der Skripte:", data.error);
                     $(".script-dropdown, #globalScriptDropdown").append('<option value="">⚠️ Keine Skripte gefunden!</option>');
@@ -295,32 +207,158 @@
             });
         }
 
-        $(document).ready(function() {
-            loadScripts();
-        });
+        function loadBinaries() {
+            $.get("/get_binaries", function(data) {
+                $(".binary-dropdown").empty().append('<option value="">Bitte Binary auswählen...</option>'); // Korrektur hier
+                if (data.error) {
+                    console.error("❌ Fehler beim Laden der Binaries:", data.error);
+                    $(".binary-dropdown").append('<option value="">⚠️ Keine Binary gefunden!</option>');
+                } else {
+                    data.forEach(binary => {
+                        $(".binary-dropdown").append(`<option value="${binary.name}">${binary.name}</option>`);
+                    });
+                }
+            }).fail(function(xhr) {
+                console.error("❌ Fehler beim Abrufen der Binaries:", xhr.responseText);
+                $(".binary-dropdown").append('<option value="">⚠️ Fehler beim Laden!</option>');
+            });
+        }
 
-        $.get("/get_tables", function(data) {
-            $("#dbTables").empty();
-            if (data.error) {
-                $("#dbTables").append('<li>⚠️ Fehler beim Laden der Tabellen!</li>');
-            } else {
-                data.forEach(table => {
-                    $("#dbTables").append(`<li><a href="./table/${table}" ">${table}</a></li>`);
-                });
+        function loadDatabaseTables() {
+            $.get("/get_tables", function(data) {
+                $("#dbTables").empty();
+                if (data.error) {
+                    $("#dbTables").append('<li>⚠️ Fehler beim Laden der Tabellen!</li>');
+                } else {
+                    data.forEach(table => {
+                        $("#dbTables").append(`<li><a href="./table/${table}" ">${table}</a></li>`);
+                    });
+                }
+            }).fail(function(xhr) {
+                console.error("Fehler beim Abrufen der Tabellen:", xhr.responseText);
+                $("#dbTables").append('<li>⚠️ Fehler beim Laden!</li>');
+            });
+        }
 
-                $(".table-link").click(function(event) {
-                    event.preventDefault();
-                    let tableName = $(this).data("table");
-                    loadTableData(tableName);
-                });
+        // Event-Handler für Buttons und Links
+        $(".send-btn").click(function() {
+            let clientId = $(this).data("client-id");
+            let message = $(this).closest("tr").find(".message-input").val().trim();
+
+            if (message === "") {
+                alert("⚠️ Bitte eine Nachricht eingeben!");
+                return;
             }
-        }).fail(function(xhr) {
-            console.error("Fehler beim Abrufen der Tabellen:", xhr.responseText);
-            $("#dbTables").append('<li>⚠️ Fehler beim Laden!</li>');
-        });
-    }
 
-    $(document).ready(function() {
+            $.post("/send_message", { client_id: clientId, message: message })
+                .done(function(response) {
+                    alert("✅ Nachricht erfolgreich gesendet!");
+                })
+                .fail(function(xhr) {
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        $(".stop-btn").click(function() {
+            let clientId = $(this).data("client-id");
+
+            $.post("/send_message", { client_id: clientId, message: "STOP" })
+                .done(function(response) {
+                    alert("🛑 STOP-Nachricht gesendet!");
+                })
+                .fail(function(xhr) {
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        $(".script-btn").click(function() {
+            let clientId = $(this).data("client-id");
+            let scriptName = $(this).closest("tr").find(".script-dropdown").val();
+            let scriptType = $(this).closest("tr").find(".script-type").val();
+
+            if (!scriptName) {
+                alert("⚠️ Bitte ein Skript auswählen!");
+                return;
+            }
+
+            $.post("/send_script", { client_id: clientId, script_name: scriptName, script_type: scriptType })
+                .done(function(response) {
+                    alert("✅ Skript erfolgreich gesendet!");
+                })
+                .fail(function(xhr) {
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        $("#sendAllBtn").click(function() {
+            let message = $("#globalMessage").val().trim();
+
+            if (message === "") {
+                alert("⚠️ Bitte eine Nachricht eingeben!");
+                return;
+            }
+
+            $.post("/send_message_all", { message: message })
+                .done(function(response) {
+                    alert("✅ Nachricht erfolgreich an alle Clients gesendet!");
+                })
+                .fail(function(xhr) {
+                    console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        $("#stopAllBtn").click(function() {
+            $.post("/send_message_all", { message: "STOP" })
+                .done(function(response) {
+                    alert("🛑 STOP-Nachricht erfolgreich an alle Clients gesendet!");
+                })
+                .fail(function(xhr) {
+                    console.error("❌ Fehler beim Senden an alle:", xhr.responseText);
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        $("#sendScriptAllBtn").click(function() {
+            let scriptName = $("#globalScriptDropdown").val();
+            let scriptType = $("#globalScriptType").val();
+
+            if (!scriptName) {
+                alert("⚠️ Bitte ein Skript auswählen!");
+                return;
+            }
+
+            $.post("/send_script_all", { script_name: scriptName, script_type: scriptType })
+                .done(function(response) {
+                    alert("✅ Skript erfolgreich an alle gesendet!");
+                })
+                .fail(function(xhr) {
+                    console.error("❌ Fehler beim Senden des Skripts:", xhr.responseText);
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        $(".binary-btn").click(function() {
+            let clientId = $(this).data("client-id");
+            let binaryName = $(this).closest("tr").find(".binary-dropdown").val();
+
+            if (!binaryName) {
+                alert("⚠️ Bitte eine Binary auswählen!");
+                return;
+            }
+
+            $.post("/send_binary", { client_id: clientId, binary_name: binaryName })
+                .done(function(response) {
+                    alert("✅ Binary erfolgreich gesendet!");
+                })
+                .fail(function(xhr) {
+                    alert("❌ Fehler beim Senden: " + xhr.responseText);
+                });
+        });
+
+        // Laden der Daten beim Seitenaufruf
+        loadScripts();
+        loadBinaries();
         loadDatabaseTables();
     });
 </script>

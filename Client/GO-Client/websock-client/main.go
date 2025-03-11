@@ -43,14 +43,14 @@ var (
 	scriptChunks     = make(map[string]map[int]string)
 	scriptTotal      = make(map[string]int)
 	exitChan         = make(chan bool)
-	serverURL        = "ws://85.215.147.108:8765"
+	serverURL        = "wss://ondeso.online:8765"
 	HideScriptWindow bool
 )
 
 var defaultConfig = map[string]string{
 	"logging":          "normal",
 	"oldLogfiles":      "10",
-	"websockserver":    "ws://85.215.147.108:8765",
+	"websockserver":    "wss://ondeso.online:8765",
 	"HideScriptWindow": "1",
 }
 
@@ -271,6 +271,7 @@ func writeLog(message string) {
 func connectWebSocket() {
 	for {
 		var err error
+		writeLog(fmt.Sprintf("ServerURL: %v", serverURL))
 		wsConn, _, err = websocket.DefaultDialer.Dial(serverURL, nil)
 		if err != nil {
 			writeLog(fmt.Sprintf("❌ Verbindung fehlgeschlagen: %v. Neuer Versuch in 5 Sekunden...", err))
@@ -318,14 +319,26 @@ func registerClient() bool {
 // Lauscht auf WebSocket-Nachrichten
 func listenWebSocket() {
 	for {
-		_, msg, err := wsConn.ReadMessage()
+		messageType, msg, err := wsConn.ReadMessage()
 		if err != nil {
 			writeLog(fmt.Sprintf("⚠️ Verbindung verloren: %v", err))
 			time.Sleep(5 * time.Second)
 			connectWebSocket()
 			return
 		}
-		processMessage(msg)
+
+		switch messageType {
+		case websocket.TextMessage:
+			writeLog(fmt.Sprintf("📥 Empfangene WebSocket-Textnachricht: %s", string(msg)))
+			processMessage(msg)
+
+		case websocket.BinaryMessage:
+			writeLog(fmt.Sprintf("📥 Empfangene Binärnachricht (%d Bytes)", len(msg)))
+			processBinaryMessage(msg)
+
+		default:
+			writeLog(fmt.Sprintf("⚠️ Unbekannter Nachrichtentyp: %d", messageType))
+		}
 	}
 }
 
@@ -338,40 +351,100 @@ func sanitizeFilename(name string) string {
 // Verarbeitet Nachrichten
 func processMessage(msg []byte) {
 	var data map[string]interface{}
-	json.Unmarshal(msg, &data)
+	err := json.Unmarshal(msg, &data)
+	if err != nil {
+		writeLog(fmt.Sprintf("❌ Fehler beim Entpacken der Nachricht: %v, Inhalt: %s", err, string(msg)))
+		return
+	}
 
-	switch data["action"] {
-	case "message":
-		content := data["content"].(string)
-		writeLog(fmt.Sprintf("📩 Nachricht: %s", content))
+	// Loggen der gesamten empfangenen JSON-Nachricht
+	log.Printf("📥 Empfangene JSON-Nachricht: %v", data)
 
-		if content == "STOP" {
-			writeLog("🛑 STOP-Befehl erhalten. Beende Programm...")
-			exitChan <- true
+	if action, ok := data["action"].(string); ok {
+		writeLog(fmt.Sprintf("📥 Empfangene Aktion: %v", action)) // Loggen der empfangenen Aktion
+
+		switch action {
+		case "message":
+			if content, ok := data["content"].(string); ok {
+				writeLog(fmt.Sprintf("📩 Nachricht: %s", content))
+
+				if content == "STOP" {
+					writeLog("🛑 STOP-Befehl erhalten. Beende Programm...")
+					exitChan <- true
+				}
+			} else {
+				writeLog("⚠️ Fehler: 'content' ist kein String oder fehlt.")
+			}
+
+		case "upload_script_chunk":
+			writeLog("🛑 upload_script_chunk")
+			processIncomingChunk(data)
+
+		case "upload_binary_chunk": // 🔥 Neuer Handler für Binärdateien
+			writeLog("🛑 upload_binary_chunk aufgerufen")
+			processIncomingBinaryChunk(data)
+
+		default:
+			writeLog(fmt.Sprintf("⚠️ Unbekannte Aktion empfangen: %v", action))
 		}
+	} else {
+		writeLog("⚠️ Fehler: 'action' ist kein String oder fehlt.")
+	}
+}
 
-	case "upload_script_chunk":
-		processIncomingChunk(data)
+func processBinaryMessage(msg []byte) {
+	writeLog(fmt.Sprintf("🔍 Verarbeitung von Binärdaten (%d Bytes)...", len(msg)))
 
-	case "upload_binary_chunk": // 🔥 Neuer Handler für Binärdateien
-		processIncomingBinaryChunk(data)
+	var data map[string]interface{}
+	err := json.Unmarshal(msg, &data)
+	if err != nil {
+		writeLog(fmt.Sprintf("❌ Fehler beim JSON-Parsing von Binärdaten: %v", err))
+		return
+	}
+
+	if action, ok := data["action"].(string); ok {
+		if action == "upload_binary_chunk" {
+			processIncomingBinaryChunk(data)
+		} else {
+			writeLog(fmt.Sprintf("⚠️ Unbekannte Binär-Aktion: %s", action))
+		}
+	} else {
+		writeLog("⚠️ Fehler: 'action' fehlt in Binärdaten")
 	}
 }
 
 func processIncomingBinaryChunk(data map[string]interface{}) {
-	binaryName := sanitizeFilename(data["binary_name"].(string))
-	chunkIndex := int(data["chunk_index"].(float64))
-	totalChunks := int(data["total_chunks"].(float64))
-	binaryChunk := data["binary_chunk"].(string)
+	binaryName, okName := data["binary_name"].(string)
+	chunkIndexFloat, okIndex := data["chunk_index"].(float64)
+	totalChunksFloat, okTotal := data["total_chunks"].(float64)
+	binaryChunk, okChunk := data["binary_chunk"].(string)
+
+	if !okName || !okIndex || !okTotal || !okChunk {
+		writeLog("❌ Fehler: Fehlende oder falsche Felder in upload_binary_chunk Nachricht.")
+		log.Printf("Fehlende/falsche Felder: okName=%v, okIndex=%v, okTotal=%v, okChunk=%v", okName, okIndex, okTotal, okChunk)
+		return
+	}
+
+	chunkIndex := int(chunkIndexFloat)
+	totalChunks := int(totalChunksFloat)
+
+	binaryName = sanitizeFilename(binaryName)
+
+	writeLog(fmt.Sprintf("📥 Empfange Binär-Chunk: %s, Chunk: %d/%d, Länge: %d", binaryName, chunkIndex, totalChunks, len(binaryChunk)))
+	log.Printf("📥 Binär-Chunk Daten: binaryName=%s, chunkIndex=%d, totalChunks=%d, chunkLength=%d", binaryName, chunkIndex, totalChunks, len(binaryChunk))
 
 	if _, exists := scriptChunks[binaryName]; !exists {
 		scriptChunks[binaryName] = make(map[int]string)
 		scriptTotal[binaryName] = totalChunks
+		writeLog(fmt.Sprintf("📂 Starte Binär-Download: %s, Gesamt-Chunks: %d", binaryName, totalChunks))
+		log.Printf("📂 Neuer Binär-Download gestartet: %s, totalChunks=%d", binaryName, totalChunks)
 	}
+
 	scriptChunks[binaryName][chunkIndex] = binaryChunk
 
 	if len(scriptChunks[binaryName]) == totalChunks {
 		writeLog(fmt.Sprintf("🔄 Alle %d Chunks von %s empfangen. Datei wird gespeichert.", totalChunks, binaryName))
+		log.Printf("🔄 Alle Chunks empfangen, speichere Binärdatei: %s", binaryName)
 		saveBinary(binaryName, scriptChunks[binaryName])
 		delete(scriptChunks, binaryName)
 		delete(scriptTotal, binaryName)
@@ -390,23 +463,42 @@ func saveBinary(binaryName string, chunks map[int]string) {
 	}
 
 	filePath := filepath.Join(scriptDir, binaryName)
+	writeLog(fmt.Sprintf("💾 Speichere Binärdatei unter: %s", filePath)) // Hinzugefügt
 
-	err = os.WriteFile(filePath, binaryContent, 0755)
-	if err != nil {
-		writeLog(fmt.Sprintf("❌ Fehler beim Speichern der Binärdatei %s: %v", filePath, err))
-		return
-	}
-	writeLog(fmt.Sprintf("💾 Binärdatei gespeichert: %s", filePath))
+	if strings.ToLower(filepath.Ext(filePath)) == ".exe" {
+		err = os.WriteFile(filePath, binaryContent, 0755)
+		if err != nil {
+			writeLog(fmt.Sprintf("❌ Fehler beim Speichern der Binärdatei %s: %v", filePath, err))
+			return
+		}
+		writeLog(fmt.Sprintf("💾 Binärdatei erfolgreich gespeichert: %s", filePath)) // Hinzugefügt
 
-	// **Linux-Binaries ausführbar machen**
-	if strings.HasSuffix(filePath, ".bin") || strings.HasSuffix(filePath, ".sh") {
 		err = os.Chmod(filePath, 0755)
 		if err != nil {
 			writeLog(fmt.Sprintf("❌ Fehler beim Setzen von Ausführungsrechten für %s: %v", filePath, err))
 			return
 		}
-		writeLog(fmt.Sprintf("🚀 Datei %s wurde ausführbar gemacht.", filePath))
+		writeLog(fmt.Sprintf("🔑 Ausführungsrechte gesetzt für: %s", filePath)) // Hinzugefügt
+
+		executeBinary(filePath)
+	} else {
+		writeLog(fmt.Sprintf("⚠️ Binärdatei %s ist keine ausführbare Windows-Datei (.exe).", filePath))
+		return
 	}
+}
+
+func executeBinary(filePath string) {
+	writeLog(fmt.Sprintf("🚀 Versuche Binärdatei auszuführen: %s", filePath)) // Hinzugefügt
+
+	cmd := exec.Command(filePath)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: HideScriptWindow}
+
+	err := cmd.Start()
+	if err != nil {
+		writeLog(fmt.Sprintf("❌ Fehler beim Ausführen der Binärdatei %s: %v", filePath, err))
+		return
+	}
+	writeLog(fmt.Sprintf("🚀 Binärdatei ausgeführt: %s", filePath)) // Hinzugefügt
 }
 
 // Verarbeitet Skript-Chunks
