@@ -1,0 +1,18 @@
+
+- Um einen Scan im IP-Bereich von 192.168.1.1 bis 192.168.1.254 durchzuführen und die Ergebnisse in der Standarddatei (scan_results.json) zu speichern:
+
+```powershell
+.\ScanScript.ps1 -start "192.168.1.1" -end "192.168.1.254"
+```
+
+- Um zusätzlich ein bestimmtes Interface anzuzeigen (das Skript nutzt diesen Wert nur zur Ausgabe):
+
+```powershell
+.\ScanScript.ps1 -start "192.168.1.1" -end "192.168.1.254" -iface "Ethernet"
+```
+
+- Um die verfügbaren Netzwerkinterfaces aufzulisten:
+
+```powershell
+.\ScanScript.ps1 -listIfaces
+```

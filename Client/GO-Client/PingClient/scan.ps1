@@ -6,152 +6,173 @@ param(
     [string]$iface
 )
 
-# Mapping von TTL zu OS
-$global:knownTTLs = @{
-    64  = "Linux"
-    128 = "Windows"
-    255 = "Cisco/Networking Devices"
-}
-
+# Funktion zur Ermittlung des Betriebssystems anhand des TTL-Werts
 function Get-OSByTTL {
-    param([int]$ttl)
-    if ($global:knownTTLs.ContainsKey($ttl)) {
-        return $global:knownTTLs[$ttl]
+    param(
+        [int]$ttl
+    )
+    switch ($ttl) {
+        64 { return "Linux" }
+        128 { return "Windows" }
+        255 { return "Cisco/Networking Devices" }
+        default { return "Unknown" }
     }
-    return "Unknown"
 }
 
-# Listet verfügbare Netzwerkadapter
+# Funktion, um alle verfügbaren Netzwerkinterfaces aufzulisten
 function List-Interfaces {
-    Get-NetAdapter | ForEach-Object {
-        Write-Output "- $($_.Name)"
-    }
+    Get-NetAdapter | ForEach-Object { Write-Output $_.Name }
 }
 
-# Ermittelt den Hostnamen via DNS
+# Funktion für den Reverse-DNS-Lookup
 function Get-Hostname {
-    param([string]$ip)
+    param(
+        [string]$ip
+    )
     try {
-        $entry = [System.Net.Dns]::GetHostEntry($ip)
-        return $entry.HostName
+        $hostEntry = [System.Net.Dns]::GetHostEntry($ip)
+        return $hostEntry.HostName
     }
     catch {
         return ""
     }
 }
 
-# Ermittelt die MAC-Adresse über den arp-Befehl
+# Funktion, um die MAC-Adresse via ARP-Tabelle zu ermitteln
 function Get-MacAddress {
-    param([string]$ip)
-    $arpOutput = arp -a | Select-String $ip
+    param(
+        [string]$ip
+    )
+    $arpOutput = arp -a
     foreach ($line in $arpOutput) {
-        $parts = $line -split "\s+"
-        # Bei Windows steht die IP in der ersten Spalte
-        if ($parts[0] -eq $ip -and $parts.Length -ge 2) {
-            return $parts[1]
+        if ($line -match $ip) {
+            $fields = $line -split "\s+"
+            if ($fields.Length -ge 2 -and $fields[0] -eq $ip) {
+                return $fields[1]
+            }
         }
     }
     return ""
 }
 
-# Konvertiert eine IP-Adresse (String) in einen Integer
+# Funktion, um ein IP-Ziel anzupingen und den TTL-Wert zu ermitteln.
+function Ping-IP {
+    param(
+        [string]$ip
+    )
+    # Führe den Ping-Befehl aus und analysiere die Ausgabe
+    $pingOutput = ping.exe -n 3 $ip
+    $ttl = 0
+    $received = $false
+    foreach ($line in $pingOutput) {
+        if ($line -match "TTL=(\d+)") {
+            $ttl = [int]$Matches[1]
+            $received = $true
+            break
+        }
+    }
+    if ($received) {
+        $result = [PSCustomObject]@{
+            IP       = $ip
+            Hostname = Get-Hostname -ip $ip
+            Mac      = Get-MacAddress -ip $ip
+            OS       = Get-OSByTTL -ttl $ttl
+            TTL      = $ttl
+            Type     = "Ping"
+        }
+        return $result
+    }
+    else {
+        return $null
+    }
+}
+
+# Funktion zur Umwandlung einer IP in eine UInt32-Zahl
 function Convert-IPToInt {
-    param([string]$ip)
-    $parts = $ip.Split('.') | ForEach-Object { [int]$_ }
-    return ($parts[0] -shl 24) -bor ($parts[1] -shl 16) -bor ($parts[2] -shl 8) -bor $parts[3]
+    param(
+        [string]$ip
+    )
+    try {
+        $bytes = [System.Net.IPAddress]::Parse($ip).GetAddressBytes()
+        [Array]::Reverse($bytes)
+        return [BitConverter]::ToUInt32($bytes, 0)
+    }
+    catch {
+        return $null
+    }
 }
 
-# Konvertiert einen Integer in eine IP-Adresse (String)
+# Funktion zur Umwandlung einer UInt32-Zahl in eine IP-Adresse
 function Convert-IntToIP {
-    param([uint32]$int)
-    $o1 = ($int -shr 24) -band 0xFF
-    $o2 = ($int -shr 16) -band 0xFF
-    $o3 = ($int -shr 8) -band 0xFF
-    $o4 = $int -band 0xFF
-    return "$o1.$o2.$o3.$o4"
+    param(
+        [UInt32]$int
+    )
+    $bytes = [BitConverter]::GetBytes($int)
+    [Array]::Reverse($bytes)
+    return [System.Net.IPAddress]::Parse(($bytes -join '.'))
 }
 
-# Erzeugt einen Bereich von IP-Adressen von $start bis $end (inklusive)
+# Funktion zur Erzeugung eines IP-Adressbereichs von startIP bis endIP
 function Generate-IPRange {
     param(
-        [string]$start,
-        [string]$end
+        [string]$startIP,
+        [string]$endIP
     )
     $ipList = @()
-    $startInt = Convert-IPToInt $start
-    $endInt   = Convert-IPToInt $end
+    $startInt = Convert-IPToInt -ip $startIP
+    $endInt = Convert-IPToInt -ip $endIP
+    if ($startInt -eq $null -or $endInt -eq $null) {
+        throw "Ungültiges IP-Format"
+    }
     for ($i = $startInt; $i -le $endInt; $i++) {
-        $ipList += Convert-IntToIP ([uint32]$i)
+        $ipList += Convert-IntToIP -int $i
     }
     return $ipList
 }
 
-# Prüft, ob eine IP im Bereich zwischen $start und $end liegt
+# Funktion zur Überprüfung, ob eine IP im Bereich zwischen startIP und endIP liegt
 function Is-IPInRange {
     param(
         [string]$ip,
-        [string]$start,
-        [string]$end
+        [string]$startIP,
+        [string]$endIP
     )
-    $ipInt    = Convert-IPToInt $ip
-    $startInt = Convert-IPToInt $start
-    $endInt   = Convert-IPToInt $end
-    return ($ipInt -ge $startInt -and $ipInt -le $endInt)
+    $ipInt    = Convert-IPToInt -ip $ip
+    $startInt = Convert-IPToInt -ip $startIP
+    $endInt   = Convert-IPToInt -ip $endIP
+    if ($ipInt -ge $startInt -and $ipInt -le $endInt) {
+        return $true
+    }
+    else {
+        return $false
+    }
 }
 
-# Führt einen Ping-Versuch (3 Versuche, Timeout 2s) aus und liefert ein Ergebnisobjekt zurück, falls erfolgreich.
-function Ping-IP {
-    param([string]$ip)
-    $ping = New-Object System.Net.NetworkInformation.Ping
-    $success = $false
-    $ttl = 0
-    for ($i=0; $i -lt 3; $i++) {
-        try {
-            $reply = $ping.Send($ip, 2000)
-            if ($reply.Status -eq "Success") {
-                $ttl = $reply.Options.Ttl
-                $success = $true
-                break
-            }
-        }
-        catch {
-            continue
-        }
-    }
-    if ($success) {
-        return [PSCustomObject]@{
-            ip       = $ip
-            hostname = Get-Hostname $ip
-            mac      = Get-MacAddress $ip
-            os       = Get-OSByTTL $ttl
-            ttl      = $ttl
-            type     = "Ping"
-        }
-    }
-    return $null
-}
-
-# Liest die ARP-Tabelle aus und liefert alle Einträge, deren IP im Bereich liegt.
+# Funktion zum Auslesen der ARP-Tabelle und Filtern der Einträge im Adressbereich
 function Scan-ARPTable {
     param(
-        [string]$start,
-        [string]$end
+        [string]$startIP,
+        [string]$endIP
     )
     $results = @()
     $arpOutput = arp -a
     foreach ($line in $arpOutput) {
-        # Für Windows: Zeilen enthalten z. B. "192.168.1.1           00-11-22-33-44-55     dynamic"
-        if ($line -match "(\d{1,3}(?:\.\d{1,3}){3})\s+([0-9a-fA-F\-]{17})") {
-            $ipFound  = $matches[1]
-            $macFound = $matches[2]
-            if (Is-IPInRange -ip $ipFound -start $start -end $end) {
-                $results += [PSCustomObject]@{
-                    ip       = $ipFound
-                    hostname = Get-Hostname $ipFound
-                    mac      = $macFound
-                    os       = Get-OSByTTL 0  # TTL kann aus ARP nicht ermittelt werden
-                    ttl      = 0
-                    type     = "ARP"
+        # Beispielzeile: "  192.168.1.1           00-11-22-33-44-55     dynamic"
+        if ($line -match "(\d{1,3}(?:\.\d{1,3}){3})") {
+            $ipFound = $Matches[1]
+            $fields = $line -split "\s+"
+            if ($fields.Length -ge 2) {
+                $mac = $fields[1]
+                if (Is-IPInRange -ip $ipFound -startIP $startIP -endIP $endIP) {
+                    $obj = [PSCustomObject]@{
+                        IP       = $ipFound
+                        Hostname = Get-Hostname -ip $ipFound
+                        Mac      = $mac
+                        OS       = Get-OSByTTL -ttl 0  # TTL kann via ARP nicht ermittelt werden
+                        TTL      = 0
+                        Type     = "ARP"
+                    }
+                    $results += $obj
                 }
             }
         }
@@ -159,56 +180,61 @@ function Scan-ARPTable {
     return $results
 }
 
-# --- Hauptprogramm ---
+# Hauptprogramm
 
 if ($listIfaces) {
-    Write-Output "Verfügbare Netzwerkinterfaces:"
     List-Interfaces
     exit
 }
 
-if ([string]::IsNullOrEmpty($start) -or [string]::IsNullOrEmpty($end)) {
+if (-not $start -or -not $end) {
     Write-Output "Bitte sowohl --start als auch --end angeben"
     exit
 }
 
-$ipList = Generate-IPRange -start $start -end $end
+Write-Output "Using interface: $iface"
 
-if ($iface) {
-    Write-Output "Using interface: $iface"
+try {
+    $ipList = Generate-IPRange -startIP $start -endIP $end
+}
+catch {
+    Write-Output $_.Exception.Message
+    exit
 }
 
 $scanResults = @()
 $existingIPs = @{}
 
+# Jeden Host im Bereich pingen
 foreach ($ip in $ipList) {
-    $result = Ping-IP -ip $ip
-    if ($result -ne $null) {
-        $scanResults += $result
-        $existingIPs[$result.ip] = $true
+    $pingResult = Ping-IP -ip $ip
+    if ($pingResult -ne $null) {
+        $scanResults += $pingResult
+        $existingIPs[$ip] = $true
     }
 }
 
-# ARP-Tabelle auslesen und Einträge ergänzen, falls noch nicht vorhanden
-$arpResults = Scan-ARPTable -start $start -end $end
+# ARP-Tabelle auslesen und ergänzen
+$arpResults = Scan-ARPTable -startIP $start -endIP $end
 foreach ($res in $arpResults) {
-    if (-not $existingIPs.ContainsKey($res.ip)) {
+    if (-not $existingIPs.ContainsKey($res.IP)) {
         $scanResults += $res
     }
 }
 
-# Falls kein Ergebnis vorliegt, füge einen Dummy-Eintrag ein
+# Falls kein Ergebnis vorliegt, Dummy-Eintrag hinzufügen
 if ($scanResults.Count -eq 0) {
-    $scanResults += [PSCustomObject]@{
-        ip       = "N/A"
-        hostname = "Kein Host gefunden"
-        mac      = "N/A"
-        os       = "N/A"
-        ttl      = 0
-        type     = "None"
+    $dummy = [PSCustomObject]@{
+        IP       = "N/A"
+        Hostname = "Kein Host gefunden"
+        Mac      = "N/A"
+        OS       = "N/A"
+        TTL      = 0
+        Type     = "None"
     }
+    $scanResults += $dummy
 }
 
 # Ergebnisse als JSON speichern
-$scanResults | ConvertTo-Json -Depth 4 | Out-File $output -Encoding utf8
+$scanResults | ConvertTo-Json -Depth 5 | Out-File -FilePath $output -Encoding utf8
 Write-Output "Scan complete. Results saved to $output"
