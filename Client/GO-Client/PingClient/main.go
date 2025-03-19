@@ -14,6 +14,8 @@ import (
 	"github.com/go-ping/ping"
 )
 
+// ScanResult repräsentiert ein einzelnes Scan-Ergebnis.
+// Das Feld LastSeen wird nur gesetzt, wenn das Endgerät per Ping erreichbar war.
 type ScanResult struct {
 	IP       string `json:"ip"`
 	Hostname string `json:"hostname"`
@@ -21,6 +23,7 @@ type ScanResult struct {
 	OS       string `json:"os"`
 	TTL      int    `json:"ttl"`
 	Type     string `json:"type"`
+	LastSeen string `json:"last_seen,omitempty"`
 }
 
 var knownTTLs = map[int]string{
@@ -38,7 +41,7 @@ func getOSByTTL(ttl int) string {
 	return "Unknown"
 }
 
-// listInterfaces zeigt alle verfügbaren Netzwerkinterfaces an
+// listInterfaces zeigt alle verfügbaren Netzwerkinterfaces an.
 func listInterfaces() {
 	interfaces, err := net.Interfaces()
 	if err != nil {
@@ -51,7 +54,7 @@ func listInterfaces() {
 	}
 }
 
-// getHostname führt einen Reverse-DNS-Lookup durch
+// getHostname führt einen Reverse-DNS-Lookup durch.
 func getHostname(ip string) string {
 	hosts, err := net.LookupAddr(ip)
 	if err != nil || len(hosts) == 0 {
@@ -60,7 +63,7 @@ func getHostname(ip string) string {
 	return hosts[0]
 }
 
-// getMacAddress versucht, über das OS-ARP-Tool die MAC-Adresse abzurufen
+// getMacAddress versucht, über das OS-ARP-Tool die MAC-Adresse abzurufen.
 func getMacAddress(ip string) string {
 	cmd := exec.Command("arp", "-a", ip)
 	output, err := cmd.Output()
@@ -78,7 +81,7 @@ func getMacAddress(ip string) string {
 }
 
 // pingIP nutzt github.com/go-ping/ping, um ein IP-Ziel anzupingen.
-// Der TTL-Wert wird im Callback OnRecv erfasst.
+// Wird eine Antwort empfangen, so wird ein ScanResult mit aktuellem Zeitstempel (LastSeen) zurückgegeben.
 func pingIP(ip string, wg *sync.WaitGroup, results chan<- ScanResult) {
 	defer wg.Done()
 
@@ -108,6 +111,7 @@ func pingIP(ip string, wg *sync.WaitGroup, results chan<- ScanResult) {
 			OS:       getOSByTTL(ttl),
 			TTL:      ttl,
 			Type:     "Ping",
+			LastSeen: time.Now().UTC().Format(time.RFC3339),
 		}
 	}
 }
@@ -169,7 +173,6 @@ func scanARPTable(startIP, endIP string) ([]ScanResult, error) {
 	}
 	lines := strings.Split(string(output), "\n")
 	for _, line := range lines {
-		// Beispielzeile (Linux): "hostname (192.168.1.10) at 00:11:22:33:44:55 [ether] on eth0"
 		startIdx := strings.Index(line, "(")
 		endIdx := strings.Index(line, ")")
 		if startIdx == -1 || endIdx == -1 || startIdx >= endIdx {
@@ -177,7 +180,6 @@ func scanARPTable(startIP, endIP string) ([]ScanResult, error) {
 		}
 		ip := line[startIdx+1 : endIdx]
 
-		// MAC-Adresse ermitteln: Suche nach dem Wort "at"
 		parts := strings.Fields(line)
 		var mac string
 		for i, part := range parts {
@@ -203,15 +205,88 @@ func scanARPTable(startIP, endIP string) ([]ScanResult, error) {
 	return results, nil
 }
 
+// --- Strukturen für das Output-Schema ---
+
+type MetaData struct {
+	Version     string `json:"Version"`
+	ContentType string `json:"ContentType"`
+	Name        string `json:"Name"`
+	Creator     string `json:"Creator"`
+	Description string `json:"Description"`
+	Vendor      string `json:"Vendor"`
+	Schema      string `json:"Schema"`
+	Preview     string `json:"Preview"`
+}
+
+type ConstItem struct {
+	Identifier string `json:"Identifier"`
+	Value      string `json:"Value"`
+}
+
+type FieldMapping struct {
+	TargetField  string `json:"TargetField"`
+	Expression   string `json:"Expression"`
+	IsIdentifier bool   `json:"IsIdentifier"`
+	ImportField  bool   `json:"ImportField"`
+}
+
+type Content struct {
+	TableName     string         `json:"TableName"`
+	Consts        []ConstItem    `json:"Consts"`
+	FieldMappings []FieldMapping `json:"FieldMappings"`
+	Data          []ScanResult   `json:"Data"`
+}
+
+type OutputSchema struct {
+	MetaData MetaData `json:"MetaData"`
+	Content  Content  `json:"Content"`
+}
+
+// createNewOutputStruct erstellt ein neues OutputSchema mit den aktuellen Scan-Ergebnissen.
+func createNewOutputStruct(data []ScanResult) OutputSchema {
+	return OutputSchema{
+		MetaData: MetaData{
+			Version:     "1.0",
+			ContentType: "db-import",
+			Name:        "NetworkScan",
+			Creator:     "ondeso",
+			Description: "NetworkScan Ergebnisse",
+			Vendor:      "ondeso GmbH",
+			Schema:      "",
+			Preview:     "",
+		},
+		Content: Content{
+			TableName: "asm_asset",
+			Consts: []ConstItem{
+				{
+					Identifier: "CaptureDate",
+					Value:      time.Now().UTC().Format(time.RFC3339),
+				},
+			},
+			FieldMappings: []FieldMapping{
+				{TargetField: "ip", Expression: "{ip}", IsIdentifier: false, ImportField: true},
+				{TargetField: "hostname", Expression: "{hostname}", IsIdentifier: false, ImportField: true},
+				{TargetField: "mac", Expression: "{mac}", IsIdentifier: false, ImportField: true},
+				{TargetField: "os", Expression: "{os}", IsIdentifier: false, ImportField: true},
+				{TargetField: "ttl", Expression: "{ttl}", IsIdentifier: false, ImportField: true},
+				{TargetField: "type", Expression: "{type}", IsIdentifier: false, ImportField: true},
+				{TargetField: "last_seen", Expression: "{last_seen}", IsIdentifier: false, ImportField: true},
+			},
+			Data: data,
+		},
+	}
+}
+
+// --- main ---
 func main() {
 	listIfaces := flag.Bool("list-ifaces", false, "List available network interfaces")
 	startIP := flag.String("start", "", "Start IP address")
 	endIP := flag.String("end", "", "End IP address")
 	output := flag.String("output", "scan_results.json", "Output JSON file")
 	iface := flag.String("iface", "", "Network interface") // nur angezeigt, nicht genutzt
+	updatelist := flag.Bool("updatelist", false, "Aktualisiere die bestehende Ergebnisliste")
 	flag.Parse()
 
-	// Falls der Nutzer --list-ifaces übergibt, zeigen wir nur die Interfaces an.
 	if *listIfaces {
 		listInterfaces()
 		return
@@ -228,7 +303,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Using interface:", *iface) // der Wert wird nur ausgegeben, nicht genutzt
+	fmt.Println("Using interface:", *iface)
 
 	var wg sync.WaitGroup
 	resultsChan := make(chan ScanResult, len(ipList))
@@ -245,7 +320,6 @@ func main() {
 		close(resultsChan)
 	}()
 
-	// Ergebnisse einsammeln
 	var scanResults []ScanResult
 	existingIPs := make(map[string]bool)
 	for res := range resultsChan {
@@ -253,20 +327,19 @@ func main() {
 		existingIPs[res.IP] = true
 	}
 
-	// ARP-Tabelle auslesen und Einträge im Bereich ergänzen
+	// ARP-Tabelle auslesen und ergänzen
 	arpResults, err := scanARPTable(*startIP, *endIP)
 	if err != nil {
 		fmt.Println("Error scanning ARP table:", err)
 	} else {
 		for _, res := range arpResults {
-			// Falls die IP noch nicht in den Ping-Ergebnissen auftaucht, hinzufügen
 			if !existingIPs[res.IP] {
 				scanResults = append(scanResults, res)
 			}
 		}
 	}
 
-	// Falls kein Ergebnis vorliegt, füge einen Dummy-Eintrag ein
+	// Falls kein Ergebnis vorliegt, Dummy-Eintrag hinzufügen
 	if len(scanResults) == 0 {
 		scanResults = append(scanResults, ScanResult{
 			IP:       "N/A",
@@ -278,8 +351,52 @@ func main() {
 		})
 	}
 
-	// JSON-Datei erzeugen
-	jsonData, err := json.MarshalIndent(scanResults, "", "  ")
+	var outputStruct OutputSchema
+
+	// Falls --updatelist angegeben wurde und die Output-Datei existiert, mergen wir die alten Ergebnisse.
+	if *updatelist {
+		if _, err := os.Stat(*output); err == nil {
+			fileData, err := os.ReadFile(*output)
+			if err == nil {
+				var previous OutputSchema
+				if json.Unmarshal(fileData, &previous) == nil {
+					// Mergen der alten Ergebnisse (key: IP)
+					merged := make(map[string]ScanResult)
+					for _, dev := range previous.Content.Data {
+						merged[dev.IP] = dev
+					}
+					// Aktualisiere oder füge neue Geräte hinzu.
+					for _, dev := range scanResults {
+						// Bei PING-Ergebnissen wird der Zeitstempel aktualisiert.
+						if dev.Type == "Ping" {
+							dev.LastSeen = time.Now().UTC().Format(time.RFC3339)
+						}
+						merged[dev.IP] = dev
+					}
+					var mergedSlice []ScanResult
+					for _, v := range merged {
+						mergedSlice = append(mergedSlice, v)
+					}
+					previous.Content.Data = mergedSlice
+					// Aktualisiere den CaptureDate in den Consts.
+					if len(previous.Content.Consts) > 0 {
+						previous.Content.Consts[0].Value = time.Now().UTC().Format(time.RFC3339)
+					}
+					outputStruct = previous
+				} else {
+					outputStruct = createNewOutputStruct(scanResults)
+				}
+			} else {
+				outputStruct = createNewOutputStruct(scanResults)
+			}
+		} else {
+			outputStruct = createNewOutputStruct(scanResults)
+		}
+	} else {
+		outputStruct = createNewOutputStruct(scanResults)
+	}
+
+	jsonData, err := json.MarshalIndent(outputStruct, "", "  ")
 	if err != nil {
 		fmt.Println("Error generating JSON:", err)
 		return
