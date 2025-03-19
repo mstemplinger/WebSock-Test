@@ -14,7 +14,7 @@
     "Consts": [
       {
         "Identifier": "CaptureDate",
-        "Value": "2025-03-19T06:29:12Z"
+        "Value": "2025-03-19T06:46:01Z"
       }
     ],
     "FieldMappings": [
@@ -63,94 +63,12 @@
     ],
     "Data": [
       {
-        "ip": "192.168.178.76",
-        "hostname": "MatinsSurfaceLS.fritz.box.",
-        "mac": "",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.1",
-        "hostname": "fritz.box.",
-        "mac": "44-4e-6d-3b-b9-bd",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.97",
-        "hostname": "192-168-178-97.fritz.box.",
-        "mac": "60-6d-3c-19-5f-54",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.166",
-        "hostname": "HPC4ACDF.fritz.box.",
-        "mac": "c8-d9-d2-c4-ac-e1",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.64",
-        "hostname": "C200-C46E35.fritz.box.",
-        "mac": "40-3f-8c-c4-6e-35",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.158",
-        "hostname": "GARDENA-2777ec.fritz.box.",
-        "mac": "94-bb-ae-27-78-50",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.20",
-        "hostname": "HOMEMATIC.fritz.box.",
-        "mac": "00-1a-22-08-4d-f3",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.174",
-        "hostname": "Android-2.fritz.box.",
-        "mac": "6a-90-10-93-a3-57",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.26",
-        "hostname": "C200-F45636.fritz.box.",
-        "mac": "b0-95-75-f4-56-36",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:11Z"
-      },
-      {
-        "ip": "192.168.178.37",
-        "hostname": "",
-        "mac": "bc-fd-0c-ef-94-1e",
-        "os": "Unknown",
-        "ttl": -1,
-        "type": "Ping",
-        "last_seen": "2025-03-19T06:29:12Z"
+        "ip": "N/A",
+        "hostname": "Kein Host gefunden",
+        "mac": "N/A",
+        "os": "N/A",
+        "ttl": 0,
+        "type": "None"
       }
     ]
   }
